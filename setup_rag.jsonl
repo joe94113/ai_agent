@@ -1,0 +1,781 @@
+{"store_id":4058,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":4058,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":4058,"service_id":1,"chunk_type":"evidence","text":"無可行建議時段（營業時間缺失或無法容納建議檔）。"}
+{"store_id":4058,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":4058,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":4058,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[]"}
+{"store_id":4058,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 27 筆、營業時間內 0 筆。"}
+{"store_id":1965,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":1965,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 3 筆、13點 1 筆"}
+{"store_id":1965,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 2 筆、3–4 人 2 筆、5 人以上 0 筆。"}
+{"store_id":1965,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 3 人。"}
+{"store_id":1965,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":1965,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 15 筆、營業時間內 4 筆。"}
+{"store_id":1989,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":1989,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 5 筆、11點 2 筆"}
+{"store_id":1989,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 5 筆、3–4 人 2 筆、5 人以上 0 筆。"}
+{"store_id":1989,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 4 人。"}
+{"store_id":1989,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":60}]"}
+{"store_id":1989,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 7 筆、營業時間內 7 筆。"}
+{"store_id":1984,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 60 分鐘。"}
+{"store_id":1984,"service_id":1,"chunk_type":"evidence","text":"熱門小時：13點 1 筆"}
+{"store_id":1984,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1984,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":1984,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[3,4,5],\"begin_at\":\"13:30:00\",\"duration_min\":90},{\"weekday\":[6],\"begin_at\":\"13:30:00\",\"duration_min\":60}]"}
+{"store_id":1984,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 7 筆、營業時間內 1 筆。"}
+{"store_id":1964,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":1964,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 1 筆"}
+{"store_id":1964,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1964,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":1964,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[6],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":1964,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 5 筆、營業時間內 1 筆。"}
+{"store_id":1991,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 60 分鐘。"}
+{"store_id":1991,"service_id":1,"chunk_type":"evidence","text":"熱門小時：17點 4 筆、18點 3 筆、11點 1 筆、16點 1 筆"}
+{"store_id":1991,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 9 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1991,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":1991,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":60}]"}
+{"store_id":1991,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 11 筆、營業時間內 9 筆。"}
+{"store_id":1936,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 60 分鐘。"}
+{"store_id":1936,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 3 筆、17點 1 筆"}
+{"store_id":1936,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 4 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1936,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 3 人。"}
+{"store_id":1936,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,4,5],\"begin_at\":\"18:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"18:30:00\",\"duration_min\":60}]"}
+{"store_id":1936,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 6 筆、營業時間內 4 筆。"}
+{"store_id":1996,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":1996,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 2 筆"}
+{"store_id":1996,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 2 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1996,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":1996,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":1996,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 2 筆、營業時間內 2 筆。"}
+{"store_id":1953,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":1953,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 1 筆"}
+{"store_id":1953,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1953,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":1953,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":1953,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1 筆、營業時間內 1 筆。"}
+{"store_id":2114,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":2114,"service_id":1,"chunk_type":"evidence","text":"熱門小時：17點 4 筆、18點 1 筆"}
+{"store_id":2114,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 5 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":2114,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 3 人。"}
+{"store_id":2114,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":60}]"}
+{"store_id":2114,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 6 筆、營業時間內 5 筆。"}
+{"store_id":1944,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 60 分鐘。"}
+{"store_id":1944,"service_id":1,"chunk_type":"evidence","text":"熱門小時：17點 1 筆"}
+{"store_id":1944,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1944,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":1944,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":60}]"}
+{"store_id":1944,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 6 筆、營業時間內 1 筆。"}
+{"store_id":1993,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 60 分鐘。"}
+{"store_id":1993,"service_id":1,"chunk_type":"evidence","text":"熱門小時：17點 2 筆、19點 2 筆、18點 1 筆、16點 1 筆"}
+{"store_id":1993,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 6 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1993,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 3 人。"}
+{"store_id":1993,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[1,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":60}]"}
+{"store_id":1993,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 7 筆、營業時間內 6 筆。"}
+{"store_id":2131,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":2131,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":2131,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":2131,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":2131,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":2131,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 2 筆、營業時間內 0 筆。"}
+{"store_id":1986,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":1986,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":1986,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1986,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":1986,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":1986,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1 筆、營業時間內 0 筆。"}
+{"store_id":2111,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":2111,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":2111,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":2111,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":2111,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":2111,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 5 筆、營業時間內 0 筆。"}
+{"store_id":1955,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":1955,"service_id":1,"chunk_type":"evidence","text":"熱門小時：14點 1 筆"}
+{"store_id":1955,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1955,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":1955,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"14:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"14:30:00\",\"duration_min\":105}]"}
+{"store_id":1955,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1 筆、營業時間內 1 筆。"}
+{"store_id":5110,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":5110,"service_id":1,"chunk_type":"evidence","text":"熱門小時：19點 1 筆"}
+{"store_id":5110,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":5110,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":5110,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,3,4,5],\"begin_at\":\"19:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":5110,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1 筆、營業時間內 1 筆。"}
+{"store_id":1973,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":1973,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":1973,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1973,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":1973,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":1973,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1 筆、營業時間內 0 筆。"}
+{"store_id":1942,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 60 分鐘。"}
+{"store_id":1942,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 1 筆"}
+{"store_id":1942,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1942,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":1942,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"18:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"18:30:00\",\"duration_min\":60}]"}
+{"store_id":1942,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1 筆、營業時間內 1 筆。"}
+{"store_id":1949,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":1949,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 1 筆"}
+{"store_id":1949,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1949,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":1949,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"18:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":1949,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1 筆、營業時間內 1 筆。"}
+{"store_id":1957,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":1957,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":1957,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1957,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":1957,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":1957,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 2 筆、營業時間內 0 筆。"}
+{"store_id":1969,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":1969,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":1969,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1969,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":1969,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":1969,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1 筆、營業時間內 0 筆。"}
+{"store_id":1990,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 60 分鐘。"}
+{"store_id":1990,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 1 筆、19點 1 筆"}
+{"store_id":1990,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 2 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1990,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":1990,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":60}]"}
+{"store_id":1990,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 2 筆、營業時間內 2 筆。"}
+{"store_id":1974,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":1974,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":1974,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1974,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":1974,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":1974,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1 筆、營業時間內 0 筆。"}
+{"store_id":1975,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":1975,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 1 筆"}
+{"store_id":1975,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1975,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":1975,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"18:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"18:30:00\",\"duration_min\":105}]"}
+{"store_id":1975,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1 筆、營業時間內 1 筆。"}
+{"store_id":1982,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 60 分鐘。"}
+{"store_id":1982,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 3 筆、17點 2 筆、20點 1 筆、16點 1 筆"}
+{"store_id":1982,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 8 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1982,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":1982,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"18:30:00\",\"duration_min\":60},{\"weekday\":[7],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"18:30:00\",\"duration_min\":60}]"}
+{"store_id":1982,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 8 筆、營業時間內 8 筆。"}
+{"store_id":1987,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":1987,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 1 筆"}
+{"store_id":1987,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1987,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":1987,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":1987,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 2 筆、營業時間內 1 筆。"}
+{"store_id":208,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 180 分鐘、週末 180 分鐘。"}
+{"store_id":208,"service_id":1,"chunk_type":"evidence","text":"熱門小時：15點 269 筆、17點 86 筆、16點 33 筆"}
+{"store_id":208,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 335 筆、3–4 人 20 筆、5 人以上 33 筆。"}
+{"store_id":208,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 5 人。"}
+{"store_id":208,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":180}]"}
+{"store_id":208,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 389 筆、營業時間內 388 筆。"}
+{"store_id":6322,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 75 分鐘、週末 75 分鐘。"}
+{"store_id":6322,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 287 筆、18點 162 筆、19點 83 筆、17點 80 筆"}
+{"store_id":6322,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 296 筆、3–4 人 287 筆、5 人以上 105 筆。"}
+{"store_id":6322,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 8 人。"}
+{"store_id":6322,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,5],\"begin_at\":\"12:30:00\",\"duration_min\":75},{\"weekday\":[1,2,3,5],\"begin_at\":\"17:30:00\",\"duration_min\":75},{\"weekday\":[6,7],\"begin_at\":\"12:30:00\",\"duration_min\":75},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":75}]"}
+{"store_id":6322,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 695 筆、營業時間內 688 筆。"}
+{"store_id":5124,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 60 分鐘。"}
+{"store_id":5124,"service_id":1,"chunk_type":"evidence","text":"熱門小時：14點 2 筆"}
+{"store_id":5124,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 2 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":5124,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 1 人。"}
+{"store_id":5124,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"14:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"14:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":60}]"}
+{"store_id":5124,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 2 筆、營業時間內 2 筆。"}
+{"store_id":6426,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 60 分鐘。"}
+{"store_id":6426,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 6 筆、11點 4 筆、13點 1 筆"}
+{"store_id":6426,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 10 筆、3–4 人 0 筆、5 人以上 1 筆。"}
+{"store_id":6426,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 3 人。"}
+{"store_id":6426,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"12:30:00\",\"duration_min\":60},{\"weekday\":[6],\"begin_at\":\"12:30:00\",\"duration_min\":60}]"}
+{"store_id":6426,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 25 筆、營業時間內 11 筆。"}
+{"store_id":6431,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 120 分鐘、週末 120 分鐘。"}
+{"store_id":6431,"service_id":1,"chunk_type":"evidence","text":"熱門小時：14點 25 筆、13點 14 筆、15點 14 筆、10點 12 筆"}
+{"store_id":6431,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 43 筆、3–4 人 32 筆、5 人以上 10 筆。"}
+{"store_id":6431,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 6 人。"}
+{"store_id":6431,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"14:30:00\",\"duration_min\":120},{\"weekday\":[6,7],\"begin_at\":\"14:30:00\",\"duration_min\":120}]"}
+{"store_id":6431,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 85 筆、營業時間內 85 筆。"}
+{"store_id":3220,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 120 分鐘、週末 120 分鐘。"}
+{"store_id":3220,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 3 筆、13點 1 筆、11點 1 筆"}
+{"store_id":3220,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 1 筆、5 人以上 4 筆。"}
+{"store_id":3220,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 8 人。"}
+{"store_id":3220,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1],\"begin_at\":\"12:30:00\",\"duration_min\":120},{\"weekday\":[7],\"begin_at\":\"12:30:00\",\"duration_min\":120}]"}
+{"store_id":3220,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 7 筆、營業時間內 5 筆。"}
+{"store_id":6424,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6424,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6424,"service_id":1,"chunk_type":"evidence","text":"無可行建議時段（營業時間缺失或無法容納建議檔）。"}
+{"store_id":6424,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6424,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6424,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[]"}
+{"store_id":6424,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 33 筆、營業時間內 0 筆。"}
+{"store_id":6422,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":6422,"service_id":1,"chunk_type":"evidence","text":"熱門小時：10點 3 筆、12點 2 筆"}
+{"store_id":6422,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 5 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6422,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 3 人。"}
+{"store_id":6422,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":6422,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 5 筆、營業時間內 5 筆。"}
+{"store_id":1992,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 120 分鐘、週末 105 分鐘。"}
+{"store_id":1992,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 1 筆、12點 1 筆"}
+{"store_id":1992,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 2 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1992,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":1992,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":120},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":120},{\"weekday\":[6],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":1992,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 2 筆、營業時間內 2 筆。"}
+{"store_id":6310,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6310,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6310,"service_id":1,"chunk_type":"evidence","text":"無可行建議時段（營業時間缺失或無法容納建議檔）。"}
+{"store_id":6310,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6310,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6310,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[]"}
+{"store_id":6310,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1 筆、營業時間內 0 筆。"}
+{"store_id":6323,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 90 分鐘。"}
+{"store_id":6323,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 2 筆、10點 1 筆"}
+{"store_id":6323,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 3 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6323,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":6323,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":90}]"}
+{"store_id":6323,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 3 筆、營業時間內 3 筆。"}
+{"store_id":6451,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6451,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 1431 筆、17點 1165 筆、13點 5 筆"}
+{"store_id":6451,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1692 筆、3–4 人 683 筆、5 人以上 226 筆。"}
+{"store_id":6451,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 16 人。"}
+{"store_id":6451,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":6451,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 2601 筆、營業時間內 2601 筆。"}
+{"store_id":6513,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 60 分鐘。"}
+{"store_id":6513,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 128 筆、11點 99 筆、18點 96 筆、19點 79 筆"}
+{"store_id":6513,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 282 筆、3–4 人 163 筆、5 人以上 71 筆。"}
+{"store_id":6513,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 8 人。"}
+{"store_id":6513,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"12:30:00\",\"duration_min\":60},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"12:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":60}]"}
+{"store_id":6513,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 516 筆、營業時間內 516 筆。"}
+{"store_id":6512,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6512,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 231 筆、18點 202 筆、19點 175 筆、11點 171 筆"}
+{"store_id":6512,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 455 筆、3–4 人 334 筆、5 人以上 157 筆。"}
+{"store_id":6512,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 12 人。"}
+{"store_id":6512,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":6512,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 946 筆、營業時間內 946 筆。"}
+{"store_id":6511,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6511,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 981 筆、12點 944 筆、18點 760 筆、19點 488 筆"}
+{"store_id":6511,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1997 筆、3–4 人 1748 筆、5 人以上 214 筆。"}
+{"store_id":6511,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 25 人。"}
+{"store_id":6511,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":6511,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 3959 筆、營業時間內 3959 筆。"}
+{"store_id":6571,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6571,"service_id":1,"chunk_type":"evidence","text":"熱門小時：13點 626 筆、18點 153 筆、12點 138 筆、11點 137 筆"}
+{"store_id":6571,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 695 筆、3–4 人 674 筆、5 人以上 0 筆。"}
+{"store_id":6571,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 15 人。"}
+{"store_id":6571,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"13:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"13:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":6571,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1369 筆、營業時間內 1369 筆。"}
+{"store_id":6567,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6567,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 839 筆、12點 628 筆、18點 582 筆、17點 545 筆"}
+{"store_id":6567,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1658 筆、3–4 人 1838 筆、5 人以上 0 筆。"}
+{"store_id":6567,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 21 人。"}
+{"store_id":6567,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":6567,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 3496 筆、營業時間內 3496 筆。"}
+{"store_id":6569,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6569,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 2009 筆、13點 1272 筆、19點 846 筆、17點 757 筆"}
+{"store_id":6569,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 2998 筆、3–4 人 3460 筆、5 人以上 202 筆。"}
+{"store_id":6569,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 32 人。"}
+{"store_id":6569,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":6569,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 6660 筆、營業時間內 6660 筆。"}
+{"store_id":6425,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":6425,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 1 筆"}
+{"store_id":6425,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6425,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":6425,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[6],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":6425,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 3 筆、營業時間內 1 筆。"}
+{"store_id":6570,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6570,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 923 筆、11點 917 筆、18點 809 筆、17點 506 筆"}
+{"store_id":6570,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1747 筆、3–4 人 2297 筆、5 人以上 0 筆。"}
+{"store_id":6570,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 23 人。"}
+{"store_id":6570,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":6570,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 4044 筆、營業時間內 4044 筆。"}
+{"store_id":6568,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6568,"service_id":1,"chunk_type":"evidence","text":"熱門小時：13點 214 筆、14點 18 筆、15點 11 筆"}
+{"store_id":6568,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 117 筆、3–4 人 126 筆、5 人以上 0 筆。"}
+{"store_id":6568,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 8 人。"}
+{"store_id":6568,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"13:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"13:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":6568,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 243 筆、營業時間內 243 筆。"}
+{"store_id":6535,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6535,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 244 筆、19點 174 筆、12點 168 筆、11點 98 筆"}
+{"store_id":6535,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 475 筆、3–4 人 270 筆、5 人以上 171 筆。"}
+{"store_id":6535,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 9 人。"}
+{"store_id":6535,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,4,5],\"begin_at\":\"18:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"18:30:00\",\"duration_min\":90}]"}
+{"store_id":6535,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 943 筆、營業時間內 916 筆。"}
+{"store_id":6447,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 60 分鐘。"}
+{"store_id":6447,"service_id":1,"chunk_type":"evidence","text":"熱門小時：15點 2 筆"}
+{"store_id":6447,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 2 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6447,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 1 人。"}
+{"store_id":6447,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":60}]"}
+{"store_id":6447,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 2 筆、營業時間內 2 筆。"}
+{"store_id":6519,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 120 分鐘、週末 120 分鐘。"}
+{"store_id":6519,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 2 筆"}
+{"store_id":6519,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 0 筆、5 人以上 1 筆。"}
+{"store_id":6519,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 5 人。"}
+{"store_id":6519,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"12:30:00\",\"duration_min\":120},{\"weekday\":[6,7],\"begin_at\":\"12:30:00\",\"duration_min\":120},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":120}]"}
+{"store_id":6519,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 2 筆、營業時間內 2 筆。"}
+{"store_id":6507,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":6507,"service_id":1,"chunk_type":"evidence","text":"熱門小時：13點 1 筆"}
+{"store_id":6507,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6507,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 2 人。"}
+{"store_id":6507,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"13:30:00\",\"duration_min\":60},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":60},{\"weekday\":[6],\"begin_at\":\"13:30:00\",\"duration_min\":105},{\"weekday\":[6],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":6507,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1 筆、營業時間內 1 筆。"}
+{"store_id":6446,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 90 分鐘。"}
+{"store_id":6446,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 2 筆、15點 1 筆、17點 1 筆"}
+{"store_id":6446,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 2 筆、3–4 人 0 筆、5 人以上 2 筆。"}
+{"store_id":6446,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 21 人。"}
+{"store_id":6446,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[2,3,4,5],\"begin_at\":\"12:30:00\",\"duration_min\":60},{\"weekday\":[2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":6446,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 5 筆、營業時間內 4 筆。"}
+{"store_id":6508,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 60 分鐘。"}
+{"store_id":6508,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 12 筆、19點 6 筆、17點 3 筆、12點 1 筆"}
+{"store_id":6508,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 8 筆、5 人以上 14 筆。"}
+{"store_id":6508,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 8 人。"}
+{"store_id":6508,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"18:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"18:30:00\",\"duration_min\":60}]"}
+{"store_id":6508,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 23 筆、營業時間內 23 筆。"}
+{"store_id":6604,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":6604,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 3 筆、12點 1 筆、19點 1 筆"}
+{"store_id":6604,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 4 筆、5 人以上 0 筆。"}
+{"store_id":6604,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 4 人。"}
+{"store_id":6604,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[1,2,3,4],\"begin_at\":\"18:30:00\",\"duration_min\":60}]"}
+{"store_id":6604,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 8 筆、營業時間內 5 筆。"}
+{"store_id":6628,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 120 分鐘、週末 120 分鐘。"}
+{"store_id":6628,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 59 筆、11點 29 筆"}
+{"store_id":6628,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 41 筆、3–4 人 47 筆、5 人以上 0 筆。"}
+{"store_id":6628,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 6 人。"}
+{"store_id":6628,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"12:30:00\",\"duration_min\":120},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":120},{\"weekday\":[6,7],\"begin_at\":\"12:30:00\",\"duration_min\":120},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":120}]"}
+{"store_id":6628,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 88 筆、營業時間內 88 筆。"}
+{"store_id":6448,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":6448,"service_id":1,"chunk_type":"evidence","text":"熱門小時：15點 1 筆、16點 1 筆"}
+{"store_id":6448,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 2 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6448,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 1 人。"}
+{"store_id":6448,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":6448,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 2 筆、營業時間內 2 筆。"}
+{"store_id":6632,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6632,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 25 筆、12點 18 筆、13點 7 筆"}
+{"store_id":6632,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 27 筆、3–4 人 19 筆、5 人以上 4 筆。"}
+{"store_id":6632,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 6 人。"}
+{"store_id":6632,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":90}]"}
+{"store_id":6632,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 110 筆、營業時間內 50 筆。"}
+{"store_id":6631,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 70 分鐘、週末 70 分鐘。"}
+{"store_id":6631,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 371 筆、12點 345 筆、11點 303 筆、13點 243 筆"}
+{"store_id":6631,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 781 筆、3–4 人 773 筆、5 人以上 342 筆。"}
+{"store_id":6631,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 14 人。"}
+{"store_id":6631,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":70},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"18:30:00\",\"duration_min\":70},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":70},{\"weekday\":[6,7],\"begin_at\":\"18:30:00\",\"duration_min\":70}]"}
+{"store_id":6631,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1896 筆、營業時間內 1896 筆。"}
+{"store_id":6634,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 70 分鐘、週末 70 分鐘。"}
+{"store_id":6634,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 349 筆、12點 323 筆、19點 319 筆、11點 265 筆"}
+{"store_id":6634,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1042 筆、3–4 人 655 筆、5 人以上 270 筆。"}
+{"store_id":6634,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 14 人。"}
+{"store_id":6634,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":70},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"18:30:00\",\"duration_min\":70},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":70},{\"weekday\":[6,7],\"begin_at\":\"18:30:00\",\"duration_min\":70}]"}
+{"store_id":6634,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1967 筆、營業時間內 1967 筆。"}
+{"store_id":6731,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 120 分鐘、週末 120 分鐘。"}
+{"store_id":6731,"service_id":1,"chunk_type":"evidence","text":"熱門小時：09點 32 筆、10點 25 筆、12點 23 筆、13點 15 筆"}
+{"store_id":6731,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 98 筆、3–4 人 53 筆、5 人以上 16 筆。"}
+{"store_id":6731,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 5 人。"}
+{"store_id":6731,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":120},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":120},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":120},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":120}]"}
+{"store_id":6731,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 167 筆、營業時間內 167 筆。"}
+{"store_id":6741,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 70 分鐘、週末 70 分鐘。"}
+{"store_id":6741,"service_id":1,"chunk_type":"evidence","text":"熱門小時：19點 604 筆、18點 539 筆、11點 457 筆、13點 456 筆"}
+{"store_id":6741,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1474 筆、3–4 人 1158 筆、5 人以上 342 筆。"}
+{"store_id":6741,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 22 人。"}
+{"store_id":6741,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":70},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"19:30:00\",\"duration_min\":70},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":70},{\"weekday\":[6,7],\"begin_at\":\"19:30:00\",\"duration_min\":70}]"}
+{"store_id":6741,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 2974 筆、營業時間內 2974 筆。"}
+{"store_id":6742,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 70 分鐘、週末 70 分鐘。"}
+{"store_id":6742,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 253 筆、12點 247 筆、11點 216 筆、13點 205 筆"}
+{"store_id":6742,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 560 筆、3–4 人 550 筆、5 人以上 258 筆。"}
+{"store_id":6742,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 13 人。"}
+{"store_id":6742,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":70},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"18:30:00\",\"duration_min\":70},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":70},{\"weekday\":[6,7],\"begin_at\":\"18:30:00\",\"duration_min\":70}]"}
+{"store_id":6742,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1368 筆、營業時間內 1368 筆。"}
+{"store_id":6733,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 120 分鐘、週末 105 分鐘。"}
+{"store_id":6733,"service_id":1,"chunk_type":"evidence","text":"熱門小時：13點 37 筆、18點 21 筆、14點 18 筆、16點 6 筆"}
+{"store_id":6733,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 51 筆、3–4 人 24 筆、5 人以上 14 筆。"}
+{"store_id":6733,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 5 人。"}
+{"store_id":6733,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"13:30:00\",\"duration_min\":120},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":120},{\"weekday\":[6,7],\"begin_at\":\"13:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":6733,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 89 筆、營業時間內 89 筆。"}
+{"store_id":6633,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6633,"service_id":1,"chunk_type":"evidence","text":"熱門小時：19點 513 筆、17點 325 筆、18點 182 筆、12點 147 筆"}
+{"store_id":6633,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 769 筆、3–4 人 508 筆、5 人以上 5 筆。"}
+{"store_id":6633,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 11 人。"}
+{"store_id":6633,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"19:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"19:30:00\",\"duration_min\":90}]"}
+{"store_id":6633,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1282 筆、營業時間內 1282 筆。"}
+{"store_id":6732,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 120 分鐘、週末 120 分鐘。"}
+{"store_id":6732,"service_id":1,"chunk_type":"evidence","text":"熱門小時：14點 83 筆、18點 54 筆、15點 34 筆、16點 12 筆"}
+{"store_id":6732,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 117 筆、3–4 人 67 筆、5 人以上 14 筆。"}
+{"store_id":6732,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 6 人。"}
+{"store_id":6732,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"14:30:00\",\"duration_min\":120},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":120},{\"weekday\":[6,7],\"begin_at\":\"14:30:00\",\"duration_min\":120},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":120}]"}
+{"store_id":6732,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 198 筆、營業時間內 198 筆。"}
+{"store_id":6501,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6501,"service_id":1,"chunk_type":"evidence","text":"熱門小時：13點 3 筆、14點 2 筆"}
+{"store_id":6501,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 2 筆、3–4 人 3 筆、5 人以上 0 筆。"}
+{"store_id":6501,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 4 人。"}
+{"store_id":6501,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[2,3,4,5],\"begin_at\":\"13:30:00\",\"duration_min\":90}]"}
+{"store_id":6501,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 5 筆、營業時間內 5 筆。"}
+{"store_id":6757,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6757,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6757,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6757,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6757,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":6757,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 141 筆、營業時間內 0 筆。"}
+{"store_id":6756,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 120 分鐘、週末 120 分鐘。"}
+{"store_id":6756,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 16 筆、17點 10 筆、19點 4 筆"}
+{"store_id":6756,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 19 筆、3–4 人 11 筆、5 人以上 0 筆。"}
+{"store_id":6756,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 4 人。"}
+{"store_id":6756,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":120},{\"weekday\":[2,3,4,5],\"begin_at\":\"18:30:00\",\"duration_min\":120},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":120},{\"weekday\":[6,7],\"begin_at\":\"18:30:00\",\"duration_min\":120}]"}
+{"store_id":6756,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 30 筆、營業時間內 30 筆。"}
+{"store_id":6759,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 120 分鐘、週末 120 分鐘。"}
+{"store_id":6759,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 20 筆、12點 14 筆、18點 10 筆、13點 8 筆"}
+{"store_id":6759,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 29 筆、3–4 人 30 筆、5 人以上 0 筆。"}
+{"store_id":6759,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 4 人。"}
+{"store_id":6759,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":120},{\"weekday\":[3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":120},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":120},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":120}]"}
+{"store_id":6759,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 59 筆、營業時間內 59 筆。"}
+{"store_id":6843,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6843,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 7 筆、18點 7 筆、11點 7 筆、17點 2 筆"}
+{"store_id":6843,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 3 筆、5 人以上 22 筆。"}
+{"store_id":6843,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 10 人。"}
+{"store_id":6843,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[2,3,4,5],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":6843,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 25 筆、營業時間內 25 筆。"}
+{"store_id":6898,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6898,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 840 筆、17點 602 筆、12點 11 筆、18點 6 筆"}
+{"store_id":6898,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 817 筆、3–4 人 642 筆、5 人以上 0 筆。"}
+{"store_id":6898,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 16 人。"}
+{"store_id":6898,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":6898,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1459 筆、營業時間內 1459 筆。"}
+{"store_id":6449,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":6449,"service_id":1,"chunk_type":"evidence","text":"熱門小時：15點 1 筆"}
+{"store_id":6449,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6449,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 1 人。"}
+{"store_id":6449,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":6449,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1 筆、營業時間內 1 筆。"}
+{"store_id":6906,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6906,"service_id":1,"chunk_type":"evidence","text":"熱門小時：17點 466 筆、11點 404 筆、20點 246 筆"}
+{"store_id":6906,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 525 筆、3–4 人 591 筆、5 人以上 0 筆。"}
+{"store_id":6906,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 18 人。"}
+{"store_id":6906,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":6906,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1465 筆、營業時間內 1116 筆。"}
+{"store_id":6907,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6907,"service_id":1,"chunk_type":"evidence","text":"熱門小時：17點 4 筆、19點 2 筆、12點 1 筆"}
+{"store_id":6907,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 5 筆、5 人以上 1 筆。"}
+{"store_id":6907,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 7 人。"}
+{"store_id":6907,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":6907,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 12 筆、營業時間內 7 筆。"}
+{"store_id":6897,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 60 分鐘。"}
+{"store_id":6897,"service_id":1,"chunk_type":"evidence","text":"熱門小時：19點 4 筆、20點 1 筆"}
+{"store_id":6897,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 3 筆、5 人以上 2 筆。"}
+{"store_id":6897,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 8 人。"}
+{"store_id":6897,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"19:30:00\",\"duration_min\":60},{\"weekday\":[6,7],\"begin_at\":\"19:30:00\",\"duration_min\":60}]"}
+{"store_id":6897,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 5 筆、營業時間內 5 筆。"}
+{"store_id":6758,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6758,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 151 筆、12點 120 筆、11點 64 筆、19點 51 筆"}
+{"store_id":6758,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 296 筆、3–4 人 130 筆、5 人以上 0 筆。"}
+{"store_id":6758,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 8 人。"}
+{"store_id":6758,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"18:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"18:30:00\",\"duration_min\":90}]"}
+{"store_id":6758,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 426 筆、營業時間內 426 筆。"}
+{"store_id":6948,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6948,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 126 筆、18點 119 筆、11點 81 筆、17點 44 筆"}
+{"store_id":6948,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 214 筆、5 人以上 208 筆。"}
+{"store_id":6948,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 24 人。"}
+{"store_id":6948,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":6948,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 422 筆、營業時間內 422 筆。"}
+{"store_id":6947,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6947,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 164 筆、11點 127 筆、18點 103 筆、19點 56 筆"}
+{"store_id":6947,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 192 筆、3–4 人 221 筆、5 人以上 141 筆。"}
+{"store_id":6947,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 15 人。"}
+{"store_id":6947,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":6947,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 554 筆、營業時間內 554 筆。"}
+{"store_id":6945,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6945,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 107 筆、12點 103 筆、11點 67 筆、19點 60 筆"}
+{"store_id":6945,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 122 筆、3–4 人 161 筆、5 人以上 134 筆。"}
+{"store_id":6945,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 14 人。"}
+{"store_id":6945,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"18:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"18:30:00\",\"duration_min\":90}]"}
+{"store_id":6945,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 420 筆、營業時間內 417 筆。"}
+{"store_id":6946,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6946,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 193 筆、12點 170 筆、11點 112 筆、19點 106 筆"}
+{"store_id":6946,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 287 筆、3–4 人 337 筆、5 人以上 103 筆。"}
+{"store_id":6946,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 18 人。"}
+{"store_id":6946,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"18:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"18:30:00\",\"duration_min\":90}]"}
+{"store_id":6946,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 727 筆、營業時間內 727 筆。"}
+{"store_id":6958,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6958,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 21 筆、11點 12 筆、17點 12 筆、13點 11 筆"}
+{"store_id":6958,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 38 筆、3–4 人 41 筆、5 人以上 0 筆。"}
+{"store_id":6958,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 4 人。"}
+{"store_id":6958,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[3,4,5],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":6958,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 79 筆、營業時間內 79 筆。"}
+{"store_id":6950,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6950,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 428 筆、18點 326 筆、11點 249 筆、17點 99 筆"}
+{"store_id":6950,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 537 筆、5 人以上 590 筆。"}
+{"store_id":6950,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 32 人。"}
+{"store_id":6950,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":6950,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 1127 筆、營業時間內 1127 筆。"}
+{"store_id":6951,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6951,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 786 筆、12點 709 筆、11點 409 筆、17點 280 筆"}
+{"store_id":6951,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 1011 筆、5 人以上 1305 筆。"}
+{"store_id":6951,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 61 人。"}
+{"store_id":6951,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"18:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"18:30:00\",\"duration_min\":90}]"}
+{"store_id":6951,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 2316 筆、營業時間內 2316 筆。"}
+{"store_id":6949,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":6949,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 4 筆、19點 2 筆、18點 2 筆、17點 1 筆"}
+{"store_id":6949,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 9 筆、5 人以上 1 筆。"}
+{"store_id":6949,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 4 人。"}
+{"store_id":6949,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":6949,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 10 筆、營業時間內 10 筆。"}
+{"store_id":7009,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 70 分鐘、週末 105 分鐘。"}
+{"store_id":7009,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 628 筆、19點 488 筆、13點 440 筆、18點 343 筆"}
+{"store_id":7009,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1115 筆、3–4 人 965 筆、5 人以上 353 筆。"}
+{"store_id":7009,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 24 人。"}
+{"store_id":7009,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":70},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":70},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":7009,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 2433 筆、營業時間內 2433 筆。"}
+{"store_id":6311,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 60 分鐘、週末 105 分鐘。"}
+{"store_id":6311,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 9 筆"}
+{"store_id":6311,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 8 筆、3–4 人 1 筆、5 人以上 0 筆。"}
+{"store_id":6311,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 4 人。"}
+{"store_id":6311,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":60},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":60},{\"weekday\":[6],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":6311,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 9 筆、營業時間內 9 筆。"}
+{"store_id":7042,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":7042,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 10 筆、12點 6 筆、18點 5 筆、13點 1 筆"}
+{"store_id":7042,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 9 筆、3–4 人 7 筆、5 人以上 6 筆。"}
+{"store_id":7042,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 5 人。"}
+{"store_id":7042,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":7042,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 22 筆、營業時間內 22 筆。"}
+{"store_id":7082,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 120 分鐘、週末 105 分鐘。"}
+{"store_id":7082,"service_id":1,"chunk_type":"evidence","text":"熱門小時：18點 3 筆、12點 3 筆、11點 2 筆、13點 2 筆"}
+{"store_id":7082,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 12 筆。"}
+{"store_id":7082,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 12 人。"}
+{"store_id":7082,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":120},{\"weekday\":[3,4,5],\"begin_at\":\"18:30:00\",\"duration_min\":120},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"18:30:00\",\"duration_min\":105}]"}
+{"store_id":7082,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 12 筆、營業時間內 12 筆。"}
+{"store_id":7126,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 120 分鐘、週末 105 分鐘。"}
+{"store_id":7126,"service_id":1,"chunk_type":"evidence","text":"熱門小時：14點 16 筆"}
+{"store_id":7126,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 11 筆、3–4 人 5 筆、5 人以上 0 筆。"}
+{"store_id":7126,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 4 人。"}
+{"store_id":7126,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":120},{\"weekday\":[6,7],\"begin_at\":\"14:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":7126,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 24 筆、營業時間內 16 筆。"}
+{"store_id":7096,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":7096,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 18 筆、11點 7 筆、17點 5 筆、18點 5 筆"}
+{"store_id":7096,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 20 筆、3–4 人 19 筆、5 人以上 0 筆。"}
+{"store_id":7096,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 8 人。"}
+{"store_id":7096,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,3,4,5],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[1,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":7096,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 39 筆、營業時間內 39 筆。"}
+{"store_id":7125,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":7125,"service_id":1,"chunk_type":"evidence","text":"熱門小時：12點 18 筆、18點 13 筆、11點 9 筆、19點 6 筆"}
+{"store_id":7125,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 46 筆、5 人以上 11 筆。"}
+{"store_id":7125,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 10 人。"}
+{"store_id":7125,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[2,3,4,5],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"12:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":7125,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 57 筆、營業時間內 57 筆。"}
+{"store_id":7098,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 90 分鐘。"}
+{"store_id":7098,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 3 筆、17點 1 筆"}
+{"store_id":7098,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 1 筆、3–4 人 2 筆、5 人以上 1 筆。"}
+{"store_id":7098,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 5 人。"}
+{"store_id":7098,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":90}]"}
+{"store_id":7098,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 4 筆、營業時間內 4 筆。"}
+{"store_id":10991,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 100 分鐘、週末 100 分鐘。"}
+{"store_id":10991,"service_id":1,"chunk_type":"evidence","text":"熱門小時：11點 17 筆、19點 16 筆、12點 16 筆、17點 7 筆"}
+{"store_id":10991,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 23 筆、3–4 人 29 筆、5 人以上 14 筆。"}
+{"store_id":10991,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 10 人。"}
+{"store_id":10991,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":100},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":100},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":100},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":100}]"}
+{"store_id":10991,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 66 筆、營業時間內 66 筆。"}
+{"store_id":1943,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":1943,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":1943,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1943,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":1943,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":1943,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":1945,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":1945,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":1945,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1945,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":1945,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":1945,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":1951,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":1951,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":1951,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1951,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":1951,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":1951,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":2063,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":2063,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":2063,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":2063,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":2063,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":2063,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":1937,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":1937,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":1937,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":1937,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":1937,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":1937,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6308,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6308,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6308,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6308,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6308,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":6308,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":2136,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":2136,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":2136,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":2136,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":2136,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":2136,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6261,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6261,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6261,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6261,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6261,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":6261,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6291,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6291,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6291,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6291,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6291,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":6291,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6290,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6290,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6290,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6290,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6290,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":6290,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6289,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6289,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6289,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6289,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6289,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":6289,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":5125,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":5125,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":5125,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":5125,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":5125,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":5125,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6288,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6288,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6288,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6288,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6288,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":6288,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":5126,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":5126,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":5126,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":5126,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":5126,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":5126,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6287,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6287,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6287,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6287,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6287,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":6287,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":5127,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":5127,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":5127,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":5127,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":5127,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":5127,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6421,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6421,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6421,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6421,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6421,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90}]"}
+{"store_id":6421,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6441,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6441,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6441,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6441,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6441,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":6441,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6442,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6442,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6442,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6442,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6442,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":6442,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6464,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6464,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6464,"service_id":1,"chunk_type":"evidence","text":"無可行建議時段（營業時間缺失或無法容納建議檔）。"}
+{"store_id":6464,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6464,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6464,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[]"}
+{"store_id":6464,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6463,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6463,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6463,"service_id":1,"chunk_type":"evidence","text":"無可行建議時段（營業時間缺失或無法容納建議檔）。"}
+{"store_id":6463,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6463,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6463,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[]"}
+{"store_id":6463,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6462,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6462,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6462,"service_id":1,"chunk_type":"evidence","text":"無可行建議時段（營業時間缺失或無法容納建議檔）。"}
+{"store_id":6462,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6462,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6462,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[]"}
+{"store_id":6462,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6461,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6461,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6461,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6461,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6461,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,3,4,5],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[6,7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":6461,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6460,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6460,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6460,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6460,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6460,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[1,2,3,4],\"begin_at\":\"17:30:00\",\"duration_min\":90},{\"weekday\":[7],\"begin_at\":\"11:30:00\",\"duration_min\":105},{\"weekday\":[7],\"begin_at\":\"17:30:00\",\"duration_min\":105}]"}
+{"store_id":6460,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6459,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6459,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6459,"service_id":1,"chunk_type":"evidence","text":"無可行建議時段（營業時間缺失或無法容納建議檔）。"}
+{"store_id":6459,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6459,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6459,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[]"}
+{"store_id":6459,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6506,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6506,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6506,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6506,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6506,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90}]"}
+{"store_id":6506,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6845,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6845,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6845,"service_id":1,"chunk_type":"evidence","text":"無可行建議時段（營業時間缺失或無法容納建議檔）。"}
+{"store_id":6845,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6845,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6845,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[]"}
+{"store_id":6845,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6903,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6903,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6903,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6903,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6903,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":6903,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6918,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6918,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6918,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6918,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6918,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[{\"weekday\":[1,2,3,4,5],\"begin_at\":\"11:30:00\",\"duration_min\":90},{\"weekday\":[6,7],\"begin_at\":\"11:30:00\",\"duration_min\":105}]"}
+{"store_id":6918,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":7078,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":7078,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":7078,"service_id":1,"chunk_type":"evidence","text":"無可行建議時段（營業時間缺失或無法容納建議檔）。"}
+{"store_id":7078,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":7078,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":7078,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[]"}
+{"store_id":7078,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":7099,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":7099,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":7099,"service_id":1,"chunk_type":"evidence","text":"無可行建議時段（營業時間缺失或無法容納建議檔）。"}
+{"store_id":7099,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":7099,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":7099,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[]"}
+{"store_id":7099,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":11005,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":11005,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":11005,"service_id":1,"chunk_type":"evidence","text":"無可行建議時段（營業時間缺失或無法容納建議檔）。"}
+{"store_id":11005,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":11005,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":11005,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[]"}
+{"store_id":11005,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":11038,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":11038,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":11038,"service_id":1,"chunk_type":"evidence","text":"無可行建議時段（營業時間缺失或無法容納建議檔）。"}
+{"store_id":11038,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":11038,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":11038,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[]"}
+{"store_id":11038,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
+{"store_id":6630,"service_id":1,"chunk_type":"policy","text":"平日建議每桌 90 分鐘、週末 105 分鐘。"}
+{"store_id":6630,"service_id":1,"chunk_type":"evidence","text":"缺乏熱門時段資料（已依營業時間過濾），已使用預設起始時間。"}
+{"store_id":6630,"service_id":1,"chunk_type":"evidence","text":"無可行建議時段（營業時間缺失或無法容納建議檔）。"}
+{"store_id":6630,"service_id":1,"chunk_type":"evidence","text":"來客人數分布：1–2 人 0 筆、3–4 人 0 筆、5 人以上 0 筆。"}
+{"store_id":6630,"service_id":1,"chunk_type":"evidence","text":"尖峰同時人數（p=0.85）≈ 0 人。"}
+{"store_id":6630,"service_id":1,"chunk_type":"policy","text":"建議開桌時段（可再微調）：[]"}
+{"store_id":6630,"service_id":1,"chunk_type":"evidence","text":"資料量：全量 0 筆、營業時間內 0 筆。"}
