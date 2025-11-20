@@ -19,8 +19,9 @@ from typing import Optional  # 已經有就略過
 OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
 MODEL_NAME = "llama3.1:8b-instruct-q4_K_M"
 
-TRAIN_PATH = Path("/setup_train.jsonl")  # 你提供的 few-shot
-RAG_PATH   = Path("/setup_rag.jsonl")    # 你提供的 rag
+BASE_DIR = Path(__file__).resolve().parent
+TRAIN_PATH = BASE_DIR / "setup_train.jsonl"
+RAG_PATH = BASE_DIR / "setup_rag.jsonl"
 
 HTTP: Optional[httpx.AsyncClient] = None
 
