@@ -1,0 +1,19 @@
+# Core runtime dependencies
+fastapi
+uvicorn[standard]
+httpx
+jinja2
+itsdangerous
+python-dotenv
+pydantic
+jsonschema
+python-multipart
+
+# Optional training stack
+unsloth
+transformers
+datasets
+accelerate
+bitsandbytes
+peft
+trl
