@@ -2,7 +2,6 @@
 import json, uuid
 from pathlib import Path
 from typing import List, Dict, Any, Optional
-
 import os
 import httpx
 import asyncio
@@ -14,10 +13,12 @@ from pydantic import BaseModel, Field, conint
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from typing import Optional  # 已經有就略過
+from datetime import datetime, timedelta
 
 # ================= 基本設定 =================
 OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
 MODEL_NAME = "llama3.1:8b-instruct-q4_K_M"
+AI_AGENT_URL = "http://127.0.0.1:8001/suggest"  # 假設 ai_agent.py 跑在 8001
 
 BASE_DIR = Path(__file__).resolve().parent
 TRAIN_PATH = BASE_DIR / "setup_train.jsonl"
@@ -246,19 +247,98 @@ def get_session_id(session_cookie: Optional[str]) -> str:
             {"role":"sys","text":"歡迎！請依序提供：1) 營業時段（平日/週末，可多段）與固定店休日、2) 每桌固定用餐時間（分鐘）與最後收客、3) 桌型清單（任意人數×張數，可先大概）。"}
         ],
         "slots": {
-            "business_hours": None,        # {"segments":[{"weekday":[int], "begin_at":"HH:mm:00", "end_at":"HH:mm:00"}],
-                                        #  "closed_weekdays":[int]}
-            "dining_policy": None,         # {"duration_min": int}
-            "tables": None,                # [{"size": int, "qty": int}]
-            "slot_policy": None            # {"interval_min": int}
+            "business_hours": None,
+            "dining_policy": None,
+            "tables": None,
+            "slot_policy": None
         },
         "suggestion": None,
         "applied": False,
         "store_id": None,
         "service_id": None,
-        "category": ""
+        "category": "",
+        "mode": "collect",   # 🟢 新增：目前在「收集模式」
     }
     return sid
+
+def pretty_suggestion_msg(suggestion: Dict[str, Any]) -> str:
+    dp = suggestion.get("dining_policy") or {}
+    weekday_min = dp.get("weekday_min")
+    weekend_min = dp.get("weekend_min", weekday_min)
+
+    lines = []
+
+    # 用餐時間
+    if weekday_min:
+        if weekend_min and weekend_min != weekday_min:
+            lines.append(f"✅ 用餐時間建議：平日 {weekday_min} 分鐘、週末 {weekend_min} 分鐘。")
+        else:
+            lines.append(f"✅ 用餐時間建議：全週 {weekday_min} 分鐘。")
+
+    # 線上預訂時段
+    tw = suggestion.get("time_windows") or []
+    if tw:
+        seg_lines = []
+        for w in tw:
+            wd = w.get("weekday", [])
+            begin_at = w.get("begin_at", "")
+            end_at = w.get("end_at", "")
+            if not wd or not begin_at or not end_at:
+                continue
+
+            # 粗略把 weekday 群組成「平日/週末」
+            if wd == [1,2,3,4,5]:
+                label = "平日"
+            elif wd == [6,7]:
+                label = "週末"
+            elif len(wd) == 7:
+                label = "全週"
+            else:
+                label = "週" + "、週".join(str(d) for d in wd)
+
+            seg_lines.append(f"{label} {begin_at[:-3]}–{end_at[:-3]}")
+
+        if seg_lines:
+            lines.append("✅ 建議開放線上預訂時段：\n- " + "\n- ".join(seg_lines))
+        else:
+            lines.append("✅ 建議線上預訂時段：先全部比照營業時間，之後可依實際狀況再縮窄。")
+    else:
+        lines.append("✅ 建議線上預訂時段：先比照營業時間全開，之後可依實際狀況再縮窄。")
+
+    # 桌型建議：簡單留一點給現場
+    tables = suggestion.get("tables") or []
+    if tables:
+        t_lines = []
+        for t in tables:
+            size = t.get("size")
+            qty = t.get("qty")
+            if not size or not qty:
+                continue
+
+            # 小 heuristic：桌數 >=3 就留 1 張給現場，其餘開線上
+            if qty >= 3:
+                online = qty - 1
+                walkin = 1
+                t_lines.append(
+                    f"{size} 人桌 {qty} 張 → 建議線上開 {online} 張，保留 {walkin} 張給現場候位。"
+                )
+            else:
+                t_lines.append(
+                    f"{size} 人桌 {qty} 張 → 建議全數開放線上預訂（現場需求少可再調整）。"
+                )
+
+        if t_lines:
+            lines.append("✅ 桌型建議：\n- " + "\n- ".join(t_lines))
+
+    # 間隔
+    sp = suggestion.get("slot_policy") or {}
+    interval_min = sp.get("interval_min")
+    if interval_min:
+        lines.append(f"✅ 每個預訂時間間隔建議 {interval_min} 分鐘。")
+
+    lines.append("如果覺得 OK，可以直接套用右側的設定；若有想調整的地方，也可以跟我說，例如『週末晚餐先不要開線上』。")
+
+    return "\n".join(lines)
 
 def render_slots_html(slots: Dict[str, Any]) -> str:
     def pretty(d): return "<pre class='code'>" + json.dumps(d, ensure_ascii=False, indent=2) + "</pre>"
@@ -283,43 +363,41 @@ def render_slots_html(slots: Dict[str, Any]) -> str:
 
 # ================== LLM 提示 ==================
 SYSTEM = """
-你是 PB 撇步的「AI 開通小幫手」。請用自然、口語的繁體中文互動。
-每次只針對「一個缺項」發問。
+你是 PB 撇步的「AI 開通小幫手」的欄位解析器。請用繁體中文理解使用者輸入，但**只輸出 JSON**。
 
-只輸出 JSON，不要 markdown 或多餘文字。格式其一：
+你的唯一工作：從「使用者最新的一句話」裡，試著擷取以下欄位（有就給，沒有就略過，不要亂猜）：
 
-1) 追問（單一缺項）：
-{ "type": "ask", "message": "口語、簡短地問該缺項，並提供一行可複製的範例" }
-
-2) 收到使用者回覆後，若能擷取欄位，回：
 {
-  "type": "collect",
   "fields": {
-     "business_hours": {
-       "segments": [ { "weekday": [int], "begin_at": "HH:mm:00", "end_at": "HH:mm:00" } ],
-       "closed_weekdays": [int]
-     },
-     "dining_policy": { "duration_min": int },
-     "tables": [ { "size": int, "qty": int } ],
-     "slot_policy": { "interval_min": int }
+    "business_hours": {
+      "segments": [ 
+        { "weekday": [int], "begin_at": "HH:mm:00", "end_at": "HH:mm:00" }
+      ],
+      "closed_weekdays": [int]
+    },
+    "dining_policy": { "duration_min": int },
+    "tables": [ { "size": int, "qty": int } ],
+    "slot_policy": { "interval_min": int }
   }
 }
 
-3) 三類都齊全時，回最終建議：
-{
-  "type": "suggest",
-  "suggestion": {
-     "dining_policy": { "duration_min": int },
-     "tables": [ { "size": int, "qty": int } ],
-     "time_windows": [ { "weekday": [int], "begin_at": "HH:mm:00", "end_at": "HH:mm:00" } ],
-     "slot_policy": { "interval_min": int }
-  }
-}
+規則說明：
+- 只輸出一層 JSON 物件，頂層 key 一定是 "fields"。
+- 若這一句話完全沒有相關資訊，就回：{ "fields": {} }
+- 不要產生其他 key（例如 "type"、"message"、"suggestion" 等等）。
+- **不要產生任何說明文字**，也不要加 markdown 或 ```，只輸出純 JSON。
 
-通用規則：
-- 時間格式 "HH:mm:00"
-- weekday 用 1~7（週一=1…週日=7）
-- 只輸出 JSON
+擷取規則舉例：
+- 使用者說「平日 17:30-21:30；週末 11:00-21:30」：
+  -> business_hours.segments 需拆成平日、週末兩段，weekday 用數字 1~7（週一=1）
+- 「週末公休」或「每週二公休」：
+  -> 寫入 closed_weekdays，例如 [7] 或 [2]
+- 「用餐時間 90 分鐘」：
+  -> dining_policy.duration_min = 90
+- 「桌型 2人×6、4人×4」：
+  -> tables = [ {"size":2,"qty":6}, {"size":4,"qty":4} ]
+- 「間隔 30 分鐘」：
+  -> slot_policy.interval_min = 30
 """
 
 def build_context(slots: Dict[str, Any]) -> str:
@@ -376,28 +454,32 @@ def ask_hint_for(field: str) -> str:
     return "請補充資訊"
 
 def pretty_train_input(inp: Dict[str, Any]) -> str:
-    """把 train 的 input JSON 縮成可閱讀的示例字串。"""
+    """把 train 的 input JSON 縮成可閱讀的示例字串（不顯示真實店名）。"""
     sp = inp.get("store_profile", {})
     bh = inp.get("business_hours", [])
     hist = inp.get("history_features", {})
+
     segs = []
     for b in bh:
         segs.append(f"(週{b.get('weekday')} {b.get('open')}~{b.get('close')})")
     seg_txt = "；".join(segs) if segs else "（營業時間：無）"
-    return f"店家：{sp.get('name','')}｜類別：{sp.get('category','')}｜地區：{sp.get('county','')}{sp.get('district','')}｜營業：{seg_txt}｜歷史樣本數：{hist.get('raw_count',0)}"
 
-def build_fewshot_text(category: str) -> str:
-    few = pick_fewshot(category, k=2)
-    if not few: return "（無示例）"
-    out = []
-    for e in few:
-        inp = e.get("input", {})
+    # 這裡用「示例店家」取代真實店名
+    return (
+        f"示例店家｜類別：{sp.get('category','') or '美食'}｜"
+        f"營業：{seg_txt}｜歷史樣本數：{hist.get('raw_count',0)}"
+    )
+
+def build_fewshot_text(category: str) -> str: 
+    few = pick_fewshot(category, k=2) 
+    if not few: 
+        return "（無示例）" 
+    out = [] 
+    for e in few: 
         out_json = e.get("output", {})
         out.append(
-            "[示例]\n使用者："
-            + pretty_train_input(inp)
-            + "\n輸出JSON："
-            + json.dumps(out_json, ensure_ascii=False)
+            "[示例]\n"
+            "輸出JSON：" + json.dumps(out_json, ensure_ascii=False)
         )
     return "\n\n".join(out)
 
@@ -415,67 +497,214 @@ def _trim(txt: str, limit: int = 1400) -> str:
     return (txt[:limit] + "…") if len(txt) > limit else txt
 
 async def ask_llm(user_text: str, slots: Dict[str, Any], category: str, store_id: Optional[int], service_id: Optional[int]) -> Dict[str, Any]:
-    ctx_now = build_context(slots)
-    few_txt = build_fewshot_text(category or "美食")
-    rag_txt = build_rag_text(category or "美食", store_id, service_id)
-
-    # 只提示「下一個缺項」
-    missing = missing_fields(slots)
-    next_field = missing[0] if missing else ""
-    friendly_hint = ask_hint_for(next_field) if next_field else "（若無缺項，請產出最終建議）"
-
     prompt = f"""{SYSTEM}
-
-【平台政策與證據（RAG）】
-{rag_txt}
-
-【目前已擷取】
-{ctx_now}
-
-【下一個要補的欄位】
-{next_field or "（無）"}
-
-【口語提問建議（給你參考語氣）】
-{friendly_hint}
-
-【已核准的示例（Few-shot）】
-{few_txt}
 
 使用者最新回覆：
 {user_text}
 """
-    # ✂️ 少量示例 & 證據，並裁切
-    few_txt = _trim(build_fewshot_text(category or "美食"), 1200)
-    rag_txt = _trim(build_rag_text(category or "美食", store_id, service_id), 800)
-
     payload = {
         "model": MODEL_NAME,
-        "prompt": prompt,         # 你的 prompt 如前
+        "prompt": prompt,
         "stream": False,
         "keep_alive": "30m",
         "options": {
-            "num_predict": 160,   # JSON 很短，限制生成長度
-            "temperature": 0.2,
-            "top_p": 0.9,
-            "num_ctx": 2048       # 夠用即可，避免超大 context
+            "num_predict": 160,
+            "temperature": 0.1,
+            "top_p": 0.8,
+            "num_ctx": 2048
         }
     }
 
     try:
-        txt = await call_ollama(payload)  # ← 使用重試封裝
+        txt = await call_ollama(payload)
     except httpx.ReadTimeout:
-        # 友善地回覆使用者，請他補一個短資料點，順便讓下一輪 prompt 更短
-        return {"type":"ask","message":"我這邊有點忙不過來🙇 先請你補「下一個欄位」就好（例如：用餐時間 90 分鐘），我再接著弄。"}
+        return {"fields": {}}
+
+    # 先試直接 parse
+    obj = None
+    try:
+        obj = json.loads(txt)
+    except Exception:
+        # 嘗試從第一個 { 到最後一個 } 擷取
+        try:
+            start = txt.index("{")
+            end = txt.rindex("}") + 1
+            obj = json.loads(txt[start:end])
+        except Exception:
+            return {"fields": {}}
+
+    if not isinstance(obj, dict):
+        return {"fields": {}}
+
+    fields = obj.get("fields") or {}
+    # 👇 這裡把 slots 傳進去，讓 _filter_fields_by_text 知道目前缺什麼欄位
+    fields = _filter_fields_by_text(user_text, fields, slots)
+    return {"fields": fields}
+
+async def parse_time_preference(user_text: str, suggestion: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    解析「已經有一版建議後，店家用自然語言說要調整時段」的需求。
+    輸出格式統一為：
+    {
+      "action": "update_time_windows" | "none",
+      "time_windows": [
+        { "weekday": [int], "begin_at": "HH:mm:00", "end_at": "HH:mm:00" }
+      ]
+    }
+    """
+    # 把目前建議當作 context 給模型參考
+    cur_suggestion = json.dumps(suggestion or {}, ensure_ascii=False, indent=2)
+
+    preference_system = """
+你是 PB 撇步的「訂位時段調整助手」。使用者已經有一版建議設定，現在用自然語言描述他想「怎麼調整線上預訂時段」。
+
+你只需要根據「最新這一句話」，決定是否要更新 time_windows。
+
+請嚴格只輸出 JSON，格式如下：
+{
+  "action": "update_time_windows" 或 "none",
+  "time_windows": [
+    {
+      "weekday": [1..7],    // 1=週一…7=週日
+      "begin_at": "HH:mm:00",
+      "end_at": "HH:mm:00"
+    }
+  ]
+}
+
+規則：
+- 如果聽得出來使用者有明確指定「哪些天、從幾點到幾點要開放預訂」，就把 action 設為 "update_time_windows"，並用最少的 time_windows 列出他要的規則。
+- 若描述只講平日（如「平日 9 點到 16 點」）→ weekday = [1,2,3,4,5]
+- 若描述只講週末 → weekday = [6,7]
+- 若講「每天」或「全週」→ weekday = [1,2,3,4,5,6,7]
+- 若完全聽不出來要調整什麼，就回：
+  { "action": "none", "time_windows": [] }
+
+注意：
+- 不要動用餐時間、桌型、間隔等欄位，只管理 time_windows。
+- 時間一律轉成 24 小時制 HH:mm:00。
+"""
+
+    prompt = f"""{preference_system}
+
+【目前的建議設定（供你參考，不用全部複製）】
+{cur_suggestion}
+
+使用者希望的調整：
+{user_text}
+"""
+
+    payload = {
+        "model": MODEL_NAME,
+        "prompt": prompt,
+        "stream": False,
+        "keep_alive": "30m",
+        "options": {
+            "num_predict": 200,
+            "temperature": 0.1,
+            "top_p": 0.8,
+            "num_ctx": 2048,
+        },
+    }
 
     try:
-        return json.loads(txt)
+        txt = await call_ollama(payload)
+    except httpx.ReadTimeout:
+        return {"action": "none", "time_windows": []}
+
+    # 嘗試解析 JSON
+    try:
+        obj = json.loads(txt)
     except Exception:
-        return {"type":"ask","message": (friendly_hint if next_field else "可以把剛剛的資訊再具體一些嗎？")}
+        try:
+            start = txt.index("{")
+            end = txt.rindex("}") + 1
+            obj = json.loads(txt[start:end])
+        except Exception:
+            return {"action": "none", "time_windows": []}
+
+    if not isinstance(obj, dict):
+        return {"action": "none", "time_windows": []}
+
+    action = obj.get("action") or "none"
+    tw = obj.get("time_windows") or []
+
+    # 做一點基本合法性檢查
+    norm_tw = []
+    for w in tw:
+        weekdays = w.get("weekday") or []
+        begin_at = w.get("begin_at") or ""
+        end_at = w.get("end_at") or ""
+        if not weekdays or not begin_at or not end_at:
+            continue
+        norm_tw.append({
+            "weekday": [int(d) for d in weekdays],
+            "begin_at": begin_at,
+            "end_at": end_at,
+        })
+
+    if action != "update_time_windows" or not norm_tw:
+        return {"action": "none", "time_windows": []}
+
+    return {"action": "update_time_windows", "time_windows": norm_tw}
+
+
+async def call_ai_agent_from_chat(state: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    從目前 slots + meta 組一個 context 給 ai_agent，
+    讓它依營業時間/用餐時間/桌型/間隔算出建議。
+    """
+    ctx = {
+        "business_hours": state["slots"].get("business_hours"),
+        "dining_policy": state["slots"].get("dining_policy"),
+        "tables": state["slots"].get("tables"),
+        "slot_policy": state["slots"].get("slot_policy"),
+    }
+
+    payload = {
+        "store_id": state.get("store_id") or 0,
+        "service_id": state.get("service_id") or 0,
+        "context": json.dumps(ctx, ensure_ascii=False)
+    }
+
+    async with httpx.AsyncClient(timeout=60) as cli:
+        r = await cli.post(AI_AGENT_URL, json=payload)
+        r.raise_for_status()
+        return r.json()  # 就是 ai_agent.Suggestion 的 dict
 
 def merge_slots(slots, fields):
+    """
+    只在「原本沒有值」時才寫入，避免 LLM 回傳的空物件把已擷取的欄位蓋掉。
+    之後如果你真的要「覆蓋更新」，可以另外做重設功能。
+    """
     for k in ["business_hours", "dining_policy", "tables", "slot_policy"]:
-        if k in fields and fields[k] is not None:
-            slots[k] = fields[k]
+        if k not in fields:
+            continue
+
+        new_val = fields.get(k)
+
+        # 1) 完全沒有就略過
+        if new_val is None:
+            continue
+
+        old_val = slots.get(k)
+
+        # 2) 如果原本已經有值，就不要輕易覆蓋
+        #   （先求穩定：寧可不更新，也不要把完整資訊變成空的）
+        if old_val:
+            # 針對 business_hours 加一個保護：
+            if k == "business_hours":
+                # 如果新的沒有 segments 或 segments 為空，就不覆蓋
+                segs = (new_val or {}).get("segments") or []
+                if not segs:
+                    continue
+
+            # 其他欄位先一律「舊的優先」，之後真的想支援覆寫再調整
+            continue
+
+        # 3) 原本是空的 → 才寫入新的
+        slots[k] = new_val
+
     return slots
 
 def to_preview(suggestion: Dict[str, Any], slots: Dict[str, Any]) -> Dict[str, Any]:
@@ -485,6 +714,133 @@ def to_preview(suggestion: Dict[str, Any], slots: Dict[str, Any]) -> Dict[str, A
         "time_windows": suggestion.get("time_windows"),
         # 先用 suggest 的；沒有就退回 slots（collect 階段填過的）
         "slot_policy": suggestion.get("slot_policy") or (slots.get("slot_policy") or {}),
+    }
+
+def _filter_fields_by_text(user_text: str, fields: Dict[str, Any], slots: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    根據使用者輸入的內容 + 目前缺哪些欄位，決定要保留哪些解析到的欄位。
+    避免 LLM 亂湊不相關欄位。
+    """
+    t = user_text.strip()
+
+    # 判斷目前還缺哪些欄位
+    missing = missing_fields(slots)
+
+    # 判斷這句話本身的關鍵字
+    wants_bh = any(w in t for w in ["平日", "週末", "公休", "營業", "：", ":"])
+    wants_dp = any(w in t for w in ["用餐", "分鐘", "分"])
+    wants_tb = any(w in t for w in ["人", "桌", "×", "x", "*"])
+
+    # slot_policy：兩種情境都要吃
+    # 1) 句子提到「間隔 / 幾分鐘 / 每」這種字
+    # 2) 目前唯一缺的是 slot_policy，而且使用者只輸入數字（例如「15」）
+    wants_sp = any(w in t for w in ["間隔", "幾分鐘"])
+    if "slot_policy.interval_min" in missing and t.isdigit():
+        wants_sp = True
+
+    cleaned = {}
+    if wants_bh and "business_hours" in fields:
+        cleaned["business_hours"] = fields["business_hours"]
+    if wants_dp and "dining_policy" in fields:
+        cleaned["dining_policy"] = fields["dining_policy"]
+    if wants_tb and "tables" in fields:
+        cleaned["tables"] = fields["tables"]
+    if wants_sp and "slot_policy" in fields:
+        cleaned["slot_policy"] = fields["slot_policy"]
+
+    return cleaned
+
+
+
+def simple_suggestion_from_slots(slots: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    當所有欄位都齊時，先用一個簡單 rule-based 建議，
+    這樣右側「預覽設定」可以先跑起來，之後你要再接 ai_agent 也很容易。
+    """
+    bh = slots.get("business_hours") or {}
+    segs = bh.get("segments") or []
+
+    # time_windows：直接等於營業時段（你之後可以改成只取收客範圍）
+    time_windows = []
+    for s in segs:
+        time_windows.append({
+            "weekday": s.get("weekday", []),
+            "begin_at": s.get("begin_at", "11:00:00"),
+            "end_at":   s.get("end_at", "21:00:00"),
+        })
+
+    dp = slots.get("dining_policy") or {}
+    duration_min = dp.get("duration_min", 90)
+
+    tables = slots.get("tables") or []
+    sp = slots.get("slot_policy") or {}
+    interval_min = sp.get("interval_min", 30)
+
+    return {
+        "dining_policy": {
+            "duration_min": duration_min,
+            "weekday_min": duration_min,
+            "weekend_min": duration_min,
+        },
+        "tables": tables,
+        "time_windows": time_windows,
+        "slot_policy": {
+            "interval_min": interval_min
+        }
+    }
+
+def _add_minutes(hhmmss: str, minutes: int) -> str:
+    t = datetime.strptime(hhmmss, "%H:%M:%S")
+    t2 = t + timedelta(minutes=minutes)
+    return t2.strftime("%H:%M:%S")
+
+def convert_ai_agent_to_chat_suggestion(s: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    ai_agent 給的是：
+      duration: weekday_min/weekend_min
+      table_mix: t2/t4/t5
+      time_windows: [{weekday, begin_at, duration_min}]
+    這裡把它轉成開通小幫手右側 preview 用的格式。
+    """
+    # 1) 用餐時間
+    dur = s.get("duration") or {}
+    weekday_min = dur.get("weekday_min", 60)
+    weekend_min = dur.get("weekend_min", weekday_min)
+
+    # 2) 桌型：t2/t4/t5 -> {size, qty}
+    tm = s.get("table_mix") or {}
+    tables = []
+    if tm.get("t2", 0) > 0:
+        tables.append({"size": 2, "qty": tm["t2"]})
+    if tm.get("t4", 0) > 0:
+        tables.append({"size": 4, "qty": tm["t4"]})
+    if tm.get("t5", 0) > 0:
+        tables.append({"size": 5, "qty": tm["t5"]})
+
+    # 3) time_windows: begin_at + duration_min -> begin_at + end_at
+    tw_out = []
+    for w in s.get("time_windows") or []:
+        begin_at = w.get("begin_at", "11:30:00")
+        dur_min = w.get("duration_min", weekday_min)
+        end_at = _add_minutes(begin_at, dur_min)
+        tw_out.append({
+            "weekday": w.get("weekday", []),
+            "begin_at": begin_at,
+            "end_at": end_at
+        })
+
+    # 4) slot_policy：先固定 30，之後你可以改成讀 ai_agent 多給的欄位
+    slot_policy = {"interval_min": 30}
+
+    return {
+        "dining_policy": {
+            "duration_min": weekday_min,
+            "weekday_min": weekday_min,
+            "weekend_min": weekend_min,
+        },
+        "tables": tables,
+        "time_windows": tw_out,
+        "slot_policy": slot_policy,
     }
 
 # ================= 路由 =================
@@ -527,76 +883,156 @@ def setmeta(
 
 @app.post("/chat")
 async def chat(request: Request, session: Optional[str] = Cookie(None)):
+    # 1) 取得 session 狀態
     sid = get_session_id(session)
     state = SESS[sid]
-    form = await request.form()
-    # ❌ 刪掉這行：text = (form.get("text") or "").trim()
-    text = (form.get("text") or "").strip()   # ✅ 只留這行
 
+    # 2) 拿表單文字
+    form = await request.form()
+    text = (form.get("text") or "").strip()
     if not text:
         return RedirectResponse("/", status_code=302)
 
-    state["messages"].append({"role":"user","text":text})
+    # 3) 記錄使用者訊息
+    state["messages"].append({"role": "user", "text": text})
 
-    # 呼叫 LLM（帶入 meta 增強 RAG 命中）
+    # 3.5) 若已在「建議模式」，優先視為「調整偏好」，不再重跑收集 + 建議
+    if state.get("mode") == "suggested":
+        # 已經有建議才有調整的意義
+        if not state.get("suggestion"):
+            state["mode"] = "collect"
+        else:
+            # 呼叫偏好 parser，嘗試更新 time_windows
+            pref = await parse_time_preference(text, state["suggestion"] or {})
+
+            if pref.get("action") == "update_time_windows" and pref.get("time_windows"):
+                state["suggestion"]["time_windows"] = pref["time_windows"]
+                # 回饋使用者新設定（簡單 summary）
+                tw = pref["time_windows"]
+                seg_lines = []
+                for w in tw:
+                    wd = w.get("weekday", [])
+                    begin_at = w.get("begin_at", "")
+                    end_at = w.get("end_at", "")
+                    if not wd or not begin_at or not end_at:
+                        continue
+                    if wd == [1,2,3,4,5]:
+                        label = "平日"
+                    elif wd == [6,7]:
+                        label = "週末"
+                    elif len(wd) == 7:
+                        label = "全週"
+                    else:
+                        label = "週" + "、週".join(str(d) for d in wd)
+                    seg_lines.append(f"{label} {begin_at[:-3]}–{end_at[:-3]}")
+
+                if seg_lines:
+                    msg = "已依照你的偏好更新線上預訂時段：\n- " + "\n- ".join(seg_lines) + "\n右側預覽設定已同步更新。"
+                else:
+                    msg = "已依照你的偏好更新線上預訂時段，右側預覽設定已同步更新。"
+
+                state["messages"].append({"role": "ai", "text": msg})
+                return RedirectResponse("/", status_code=302)
+
+            # 若 parser 判斷為 action:"none" 或解析失敗，就回應說目前還只支援基本調整
+            state["messages"].append({
+                "role": "ai",
+                "text": (
+                    "目前我有先幫你算出一版設定建議，右側可以預覽 / 套用。\n"
+                    "對於「調整預訂時段」的描述，如果可以，請用類似格式再講一次，例如：\n"
+                    "「平日 09:00 到 16:00 都開放預訂」或「週末 11:00–21:00 開線上」"
+                )
+            })
+            return RedirectResponse("/", status_code=302)
+
+    # 🔹 走到這裡代表 mode != 'suggested'，還在「收集模式」
+
+    # 3.6) 若目前只缺「slot_policy.interval_min」而且這句是純數字，就直接當作間隔分鐘數，不丟給 LLM
+    missing = missing_fields(state["slots"])
+    if "slot_policy.interval_min" in missing and text.isdigit():
+        state["slots"]["slot_policy"] = {"interval_min": int(text)}
+
+        wants = missing_fields(state["slots"])
+        if wants:
+            next_field = wants[0]
+            if state.get("last_asked") == next_field and len(wants) > 1:
+                next_field = wants[1]
+            state["last_asked"] = next_field
+            hint = ask_hint_for(next_field)
+            state["messages"].append({"role": "ai", "text": hint})
+        else:
+            # ✅ 第一次收集完，直接算建議，並把 mode 改成 suggested
+            state["last_asked"] = None
+            state["messages"].append({"role": "ai", "text": "資料齊了，我來幫你算一版線上預訂設定建議。"})
+
+            try:
+                ai_raw = await call_ai_agent_from_chat(state)
+                suggestion = convert_ai_agent_to_chat_suggestion(ai_raw)
+                state["suggestion"] = suggestion
+                state["mode"] = "suggested"   # 進入建議模式
+
+                msg = pretty_suggestion_msg(suggestion)
+                state["messages"].append({"role": "ai", "text": msg})
+            except Exception:
+                suggestion = simple_suggestion_from_slots(state["slots"])
+                state["suggestion"] = suggestion
+                state["mode"] = "suggested"
+
+                state["messages"].append({
+                    "role": "ai",
+                    "text": "我在叫分析引擎時有點問題，先用你填的營業時間直接推一版基本設定，右側可以先預覽、之後再微調。"
+                })
+
+        return RedirectResponse("/", status_code=302)
+
+    # 4) 其他情況才請 LLM 當「欄位解析器」
     res = await ask_llm(
         text,
         state["slots"],
-        category=state.get("category",""),
+        category=state.get("category", ""),
         store_id=state.get("store_id"),
         service_id=state.get("service_id")
     )
 
-    t = res.get("type")
-    if t == "ask":
-        msg = res.get("message", "我需要更多資訊。")
-        state["messages"].append({"role":"ai","text":msg})
-    elif t == "collect":
-        fields = res.get("fields", {})
+    fields = res.get("fields") or {}
+
+    # 5) 有解析到欄位就 merge 進 slots
+    if fields:
         state["slots"] = merge_slots(state["slots"], fields)
 
-        # 1) 判斷還缺哪些欄位
-        wants = missing_fields(state["slots"])
+    # 6) 檢查還缺哪些欄位
+    wants = missing_fields(state["slots"])
 
-        if wants:
-            # 2) 立刻主動追問下一個缺項（只問一個）
-            next_field = wants[0]
-            if state.get("last_asked") == next_field and next_field.split(".")[0] in state["slots"]:
-                if len(wants) > 1:
-                    next_field = wants[1]
-            state["last_asked"] = next_field
-            state["messages"].append({"role":"ai","text": ask_hint_for(next_field)})
-        else:
-            state["last_asked"] = None
-            # 3) 都齊了就直接請模型產出最終建議（可選）
-            state["messages"].append({"role":"ai","text":"資料齊了，我來產出建議設定。"})
-            res2 = await ask_llm(
-                "請產出建議設定",
-                state["slots"],
-                category=state.get("category",""),
-                store_id=state.get("store_id"),
-                service_id=state.get("service_id")
-            )
-            if res2.get("type") == "suggest":
-                state["suggestion"] = res2.get("suggestion", {})
-                state["messages"].append({"role":"ai","text":"已完成建議設定，右側可預覽並套用。"})
-            else:
-                # 萬一模型沒回 suggest，就保底再問一次「下一個缺項」
-                wants = missing_fields(state["slots"])
-                if wants:
-                    state["messages"].append({"role":"ai","text": ask_hint_for(wants[0])})
-                else:
-                    state["messages"].append({"role":"ai","text":"我已記錄你提供的資訊。"})
-    elif t == "suggest":
-        # ✅ 還缺就不接受 suggest，改為繼續追問
-        wants = missing_fields(state["slots"])
-        if wants:
-            state["messages"].append({"role":"ai","text": ask_hint_for(wants[0])})
-        else:
-            state["suggestion"] = res.get("suggestion", {})
-            state["messages"].append({"role":"ai","text":"已完成建議設定，右側可預覽並套用。"})
+    if wants:
+        next_field = wants[0]
+        if state.get("last_asked") == next_field and len(wants) > 1:
+            next_field = wants[1]
+
+        state["last_asked"] = next_field
+        hint = ask_hint_for(next_field)
+        state["messages"].append({"role": "ai", "text": hint})
     else:
-        state["messages"].append({"role":"ai","text":"我收到非預期格式，請再補充一次關鍵資訊～"})
+        # ✅ 全部欄位都齊了 → 叫 ai_agent 幫你算「真正的建議」
+        state["last_asked"] = None
+        state["messages"].append({"role": "ai", "text": "資料齊了，我來幫你算一版線上預訂設定建議。"})
+
+        try:
+            ai_raw = await call_ai_agent_from_chat(state)
+            suggestion = convert_ai_agent_to_chat_suggestion(ai_raw)
+            state["suggestion"] = suggestion
+            state["mode"] = "suggested"
+
+            msg = pretty_suggestion_msg(suggestion)
+            state["messages"].append({"role": "ai", "text": msg})
+        except Exception:
+            suggestion = simple_suggestion_from_slots(state["slots"])
+            state["suggestion"] = suggestion
+            state["mode"] = "suggested"
+
+            state["messages"].append({
+                "role": "ai",
+                "text": "我在叫分析引擎時有點問題，先用你填的營業時間直接推一版基本設定，右側可以先預覽、之後再微調。"
+            })
 
     return RedirectResponse("/", status_code=302)
 
