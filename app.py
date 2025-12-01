@@ -167,7 +167,7 @@ INDEX_HTML = r"""
             </div>
           {% endif %}
           {% if applied %}
-            <p class="ok">✅ 已套用（模擬）：是</p>
+            <p class="ok"> 已套用（模擬）：是</p>
           {% endif %}
         </div>
 
@@ -271,9 +271,9 @@ def pretty_suggestion_msg(suggestion: Dict[str, Any]) -> str:
     # 用餐時間
     if weekday_min:
         if weekend_min and weekend_min != weekday_min:
-            lines.append(f"✅ 用餐時間建議：平日 {weekday_min} 分鐘、週末 {weekend_min} 分鐘。")
+            lines.append(f" 用餐時間建議：平日 {weekday_min} 分鐘、週末 {weekend_min} 分鐘。")
         else:
-            lines.append(f"✅ 用餐時間建議：全週 {weekday_min} 分鐘。")
+            lines.append(f" 用餐時間建議：全週 {weekday_min} 分鐘。")
 
     # 線上預訂時段
     tw = suggestion.get("time_windows") or []
@@ -299,11 +299,11 @@ def pretty_suggestion_msg(suggestion: Dict[str, Any]) -> str:
             seg_lines.append(f"{label} {begin_at[:-3]}–{end_at[:-3]}")
 
         if seg_lines:
-            lines.append("✅ 建議開放線上預訂時段：\n- " + "\n- ".join(seg_lines))
+            lines.append(" 建議開放線上預訂時段：\n- " + "\n- ".join(seg_lines))
         else:
-            lines.append("✅ 建議線上預訂時段：先全部比照營業時間，之後可依實際狀況再縮窄。")
+            lines.append(" 建議線上預訂時段：先全部比照營業時間，之後可依實際狀況再縮窄。")
     else:
-        lines.append("✅ 建議線上預訂時段：先比照營業時間全開，之後可依實際狀況再縮窄。")
+        lines.append(" 建議線上預訂時段：先比照營業時間全開，之後可依實際狀況再縮窄。")
 
     # 桌型建議：簡單留一點給現場
     tables = suggestion.get("tables") or []
@@ -328,13 +328,13 @@ def pretty_suggestion_msg(suggestion: Dict[str, Any]) -> str:
                 )
 
         if t_lines:
-            lines.append("✅ 桌型建議：\n- " + "\n- ".join(t_lines))
+            lines.append(" 桌型建議：\n- " + "\n- ".join(t_lines))
 
     # 間隔
     sp = suggestion.get("slot_policy") or {}
     interval_min = sp.get("interval_min")
     if interval_min:
-        lines.append(f"✅ 每個預訂時間間隔建議 {interval_min} 分鐘。")
+        lines.append(f" 每個預訂時間間隔建議 {interval_min} 分鐘。")
 
     lines.append("如果覺得 OK，可以直接套用右側的設定；若有想調整的地方，也可以跟我說，例如『週末晚餐先不要開線上』。")
 
@@ -710,9 +710,9 @@ def merge_slots(slots, fields):
 def to_preview(suggestion: Dict[str, Any], slots: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "dining_policy": suggestion.get("dining_policy"),
-        "tables": suggestion.get("tables"),
+        # 若聊天已經有桌型，就優先用 slots 裡的；沒有才用 ai_agent 的建議桌型
+        "tables": slots.get("tables") or suggestion.get("tables"),
         "time_windows": suggestion.get("time_windows"),
-        # 先用 suggest 的；沒有就退回 slots（collect 階段填過的）
         "slot_policy": suggestion.get("slot_policy") or (slots.get("slot_policy") or {}),
     }
 
@@ -739,8 +739,10 @@ def _filter_fields_by_text(user_text: str, fields: Dict[str, Any], slots: Dict[s
         wants_sp = True
 
     cleaned = {}
-    if wants_bh and "business_hours" in fields:
+    #  只在「有提到平日/週末/營業」且「有數字」時，才接受 business_hours
+    if wants_bh and has_digit and "business_hours" in fields:
         cleaned["business_hours"] = fields["business_hours"]
+
     if wants_dp and "dining_policy" in fields:
         cleaned["dining_policy"] = fields["dining_policy"]
     if wants_tb and "tables" in fields:
@@ -749,8 +751,6 @@ def _filter_fields_by_text(user_text: str, fields: Dict[str, Any], slots: Dict[s
         cleaned["slot_policy"] = fields["slot_policy"]
 
     return cleaned
-
-
 
 def simple_suggestion_from_slots(slots: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -961,7 +961,7 @@ async def chat(request: Request, session: Optional[str] = Cookie(None)):
             hint = ask_hint_for(next_field)
             state["messages"].append({"role": "ai", "text": hint})
         else:
-            # ✅ 第一次收集完，直接算建議，並把 mode 改成 suggested
+            #  第一次收集完，直接算建議，並把 mode 改成 suggested
             state["last_asked"] = None
             state["messages"].append({"role": "ai", "text": "資料齊了，我來幫你算一版線上預訂設定建議。"})
 
@@ -1012,7 +1012,7 @@ async def chat(request: Request, session: Optional[str] = Cookie(None)):
         hint = ask_hint_for(next_field)
         state["messages"].append({"role": "ai", "text": hint})
     else:
-        # ✅ 全部欄位都齊了 → 叫 ai_agent 幫你算「真正的建議」
+        #  全部欄位都齊了 → 叫 ai_agent 幫你算「真正的建議」
         state["last_asked"] = None
         state["messages"].append({"role": "ai", "text": "資料齊了，我來幫你算一版線上預訂設定建議。"})
 
