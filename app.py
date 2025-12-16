@@ -726,27 +726,35 @@ def _filter_fields_by_text(user_text: str, fields: Dict[str, Any], slots: Dict[s
     # 判斷目前還缺哪些欄位
     missing = missing_fields(slots)
 
+    # 這句話裡有沒有「時間數字」（避免只講「有上班」就亂吃營業時間）
+    has_digit = any(ch.isdigit() for ch in t)
+
     # 判斷這句話本身的關鍵字
     wants_bh = any(w in t for w in ["平日", "週末", "公休", "營業", "：", ":"])
     wants_dp = any(w in t for w in ["用餐", "分鐘", "分"])
     wants_tb = any(w in t for w in ["人", "桌", "×", "x", "*"])
 
     # slot_policy：兩種情境都要吃
-    # 1) 句子提到「間隔 / 幾分鐘 / 每」這種字
-    # 2) 目前唯一缺的是 slot_policy，而且使用者只輸入數字（例如「15」）
+    # 1) 句子提到「間隔 / 幾分鐘」
+    # 2) 目前缺 slot_policy.interval_min，而且使用者只輸入數字（例如「15」）
     wants_sp = any(w in t for w in ["間隔", "幾分鐘"])
     if "slot_policy.interval_min" in missing and t.isdigit():
         wants_sp = True
 
     cleaned = {}
-    #  只在「有提到平日/週末/營業」且「有數字」時，才接受 business_hours
+
+    # ✅ 只有在「有提到平日/週末/公休/營業」且「有數字」時，才接受 business_hours
+    #   例如：「平日 9:00-18:00 週末公休」→ OK
+    #        「平日有上班 週末公休」→ 沒數字，不吃營業時間，之後會再問一次幾點到幾點
     if wants_bh and has_digit and "business_hours" in fields:
         cleaned["business_hours"] = fields["business_hours"]
 
     if wants_dp and "dining_policy" in fields:
         cleaned["dining_policy"] = fields["dining_policy"]
+
     if wants_tb and "tables" in fields:
         cleaned["tables"] = fields["tables"]
+
     if wants_sp and "slot_policy" in fields:
         cleaned["slot_policy"] = fields["slot_policy"]
 
