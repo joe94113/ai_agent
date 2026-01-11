@@ -343,6 +343,10 @@ def merge_patch(state: Dict[str, Any], patch: Dict[str, Any]) -> None:
         else:
             state[k] = v
 
+def has_question(text: str) -> bool:
+    # 只要有問號就算（你也可以更嚴格：最後一行要含問號）
+    return ("？" in text) or ("?" in text)
+
 def main():
     # 初始 state（store_id 通常沒有，先固定 null）
     state: Dict[str, Any] = {"store_id": None}
@@ -356,6 +360,14 @@ def main():
 
     while True:
         assistant_text = call_ollama(messages)
+        final = extract_json_after_prefix(assistant_text, "FINAL_JSON:")
+        if final is None and not has_question(assistant_text):
+            messages.append({"role": "assistant", "content": assistant_text})
+            messages.append({
+                "role": "user",
+                "content": "你剛剛沒有問我下一題。請依流程重答：先用一句話回應我，最後一定要只問一題（下一題），並照規則輸出 STATE_PATCH。"
+            })
+            continue
         print("\n🤖 Agent：")
         print(assistant_text)
 
