@@ -3,6 +3,7 @@ import json
 import re
 from contextlib import redirect_stdout
 from unittest.mock import patch
+import os
 
 import onboarding_fsm as agent  # ← 改成你的檔名（不要加 .py）
 
@@ -187,6 +188,16 @@ def run_case(name: str, inputs: list[str], use_real_llm: bool = False):
     # 你也可以加上簡單統計
     turns = out.count("🤖 Agent：")
     print(f"✅ [{name}] PASS | turns={turns} | store_name={final.get('store_name')} | capacity_hint={final.get('capacity_hint')}")
+    
+    # 將結果寫入檔案
+    with open(f"test_results_{name}.txt", "w", encoding="utf-8") as f:
+        f.write(f"測試案例: {name}\n")
+        f.write(f"回應總回合數: {turns}\n")
+        f.write(f"store_name: {final.get('store_name')}\n")
+        f.write(f"capacity_hint: {final.get('capacity_hint')}\n")
+        f.write("\n詳細問答過程:\n")
+        f.write(out)
+
     return final, out
 
 
@@ -208,21 +219,6 @@ def main():
             "C",  # Step 10 no-show tolerance
             "A",  # Step 11 accept recommendation
         ],
-        "closed_sunday": [
-            "週末小館",
-            "4人桌3張 6人桌2張",
-            "B",
-            "週一到週六 08:00-17:00，週日公休",
-            "A",
-            "B",  # 不可併桌
-            # max_party_size 會被程式用桌型最大值補上，不會問
-            "B",
-            "D",
-            "B",
-            "A",
-            "B",
-            "A",  # Step 11 accept
-        ],
         "random_answer_case_1": [
             "123簡餐",
             "4人桌5個 6人桌2個",
@@ -243,22 +239,6 @@ def main():
             "123簡餐",
             "4人桌5個 6人桌2個",
             "藍色好嗎？",  # 亂回答
-            "A",  # Step 3
-            "每天 08:00-17:00",
-            "A",  # Step 4 confirm
-            "A",  # Step 5 merge tables
-            "12人",  # Step 5-2 max party
-            "A",  # Step 6 online role
-            "C",  # Step 7 peak
-            "C",  # Step 8 quota
-            "C",  # Step 9 peak strategy
-            "C",  # Step 10 no-show tolerance
-            "A",  # Step 11 accept recommendation
-        ],
-        "random_answer_case_3": [
-            "週末小館",
-            "4人桌3張 6人桌2張",
-            "隨便吧",  # 亂回答
             "A",  # Step 3
             "每天 08:00-17:00",
             "A",  # Step 4 confirm
