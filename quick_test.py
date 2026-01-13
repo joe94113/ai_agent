@@ -168,6 +168,15 @@ def run_case(name: str, inputs: list[str], use_real_llm: bool = False):
 
     out = buf.getvalue()
 
+    # 记录问题、输入和AI的回答
+    log_data = []
+
+    for line in out.splitlines():
+        if "🤖 Agent：" in line:
+            log_data.append(f"問題:\n{line}")
+        elif "你：" in line:
+            log_data.append(f"輸入:\n{line}")
+
     # 抓 FINAL_JSON（你的 main 會 print: FINAL_JSON: {...}）
     final = None
     for line in reversed(out.splitlines()):
@@ -196,12 +205,11 @@ def run_case(name: str, inputs: list[str], use_real_llm: bool = False):
         f.write(f"store_name: {final.get('store_name')}\n")
         f.write(f"capacity_hint: {final.get('capacity_hint')}\n")
         f.write("\n### 詳細問答過程:\n")
-        f.write("### 使用者輸入\n")
-        for input_line in inputs:
-            f.write(f"{input_line}\n")
-        f.write("\n### AI 回答\n")
-        f.write(out)
-
+        
+        # 輸出問題和使用者回答
+        for log in log_data:
+            f.write(f"{log}\n")
+    
     return final, out
 
 
