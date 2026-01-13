@@ -223,6 +223,54 @@ def main():
             "B",
             "A",  # Step 11 accept
         ],
+        "random_answer_case_1": [
+            "123簡餐",
+            "4人桌5個 6人桌2個",
+            "1+1",  # 隨便回答
+            "A",  # Step 3
+            "每天 08:00-17:00",
+            "A",  # Step 4 confirm
+            "A",  # Step 5 merge tables
+            "12人",  # Step 5-2 max party
+            "A",  # Step 6 online role
+            "C",  # Step 7 peak
+            "C",  # Step 8 quota
+            "C",  # Step 9 peak strategy
+            "C",  # Step 10 no-show tolerance
+            "A",  # Step 11 accept recommendation
+        ],
+        "random_answer_case_2": [
+            "123簡餐",
+            "4人桌5個 6人桌2個",
+            "藍色好嗎？",  # 亂回答
+            "A",  # Step 3
+            "每天 08:00-17:00",
+            "A",  # Step 4 confirm
+            "A",  # Step 5 merge tables
+            "12人",  # Step 5-2 max party
+            "A",  # Step 6 online role
+            "C",  # Step 7 peak
+            "C",  # Step 8 quota
+            "C",  # Step 9 peak strategy
+            "C",  # Step 10 no-show tolerance
+            "A",  # Step 11 accept recommendation
+        ],
+        "random_answer_case_3": [
+            "週末小館",
+            "4人桌3張 6人桌2張",
+            "隨便吧",  # 亂回答
+            "A",  # Step 3
+            "每天 08:00-17:00",
+            "A",  # Step 4 confirm
+            "A",  # Step 5 merge tables
+            "12人",  # Step 5-2 max party
+            "A",  # Step 6 online role
+            "C",  # Step 7 peak
+            "C",  # Step 8 quota
+            "C",  # Step 9 peak strategy
+            "C",  # Step 10 no-show tolerance
+            "A",  # Step 11 accept recommendation
+        ],
     }
 
     for name, inputs in TESTS.items():
