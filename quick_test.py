@@ -195,7 +195,7 @@ def run_case(name: str, inputs: list[str], use_real_llm: bool = False):
         f.write(f"回應總回合數: {turns}\n")
         f.write(f"store_name: {final.get('store_name')}\n")
         f.write(f"capacity_hint: {final.get('capacity_hint')}\n")
-        f.write("\n詳細問答過程:\n")
+        f.write("\n### 詳細問答過程:\n")
         f.write("### 使用者輸入\n")
         for input_line in inputs:
             f.write(f"{input_line}\n")
