@@ -1,5 +1,6 @@
 import json
 import re
+import math
 import requests
 from typing import Dict, Any, Optional, Tuple, List
 
@@ -7,7 +8,7 @@ OLLAMA_URL = "http://localhost:11434/api/chat"
 MODEL_NAME = "llama3.1:8b-instruct-q4_K_M"
 
 # =========================
-# Validators (沿用/補強你原本的)
+# Validators
 # =========================
 
 HHMM_RE = re.compile(r"^\d{4}$")
@@ -125,16 +126,206 @@ def merge_patch(state: Dict[str, Any], patch: Dict[str, Any]) -> None:
             state[k] = v
 
 def capacity_hint_from_resources(resources: List[Dict[str, int]]) -> int:
-    # 「總座位數」當 capacity_hint：sum(party_size * spots_total)
+    # 總座位數 = sum(party_size * spots_total)
     return max(1, sum(int(r["party_size"]) * int(r["spots_total"]) for r in resources))
 
+
 # =========================
-# LLM Extractor (只抽取，不聊天，不問問題)
+# Human-readable summaries
+# =========================
+
+DAY_NAMES = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"]
+
+def hhmm_to_colon(hhmm: str) -> str:
+    s = str(hhmm).zfill(4)
+    return f"{s[:2]}:{s[2:]}"
+
+def summarize_business_hours(bh: List[Dict[str, Any]]) -> str:
+    """
+    例：週一～週日 08:00–17:00；週日 公休
+    支援同一天多段：11:00–14:00、17:00–21:00
+    """
+    day_map: Dict[int, List[Tuple[int, str, int, str]]] = {d: [] for d in range(7)}
+    for p in bh:
+        o = p.get("open", {})
+        c = p.get("close", {})
+        od = int(o.get("day"))
+        cd = int(c.get("day"))
+        ot = str(o.get("time")).zfill(4)
+        ct = str(c.get("time")).zfill(4)
+        day_map[od].append((od, ot, cd, ct))
+
+    def interval_text(od: int, ot: str, cd: int, ct: str) -> str:
+        ot2 = hhmm_to_colon(ot)
+        ct2 = hhmm_to_colon(ct)
+        if od == cd:
+            return f"{ot2}–{ct2}"
+        return f"{ot2}–隔天{ct2}"
+
+    sigs: List[str] = []
+    for d in range(7):
+        intervals = day_map.get(d, [])
+        if not intervals:
+            sigs.append("CLOSED")
+            continue
+        intervals = sorted(intervals, key=lambda x: x[1])
+        sig = "、".join(interval_text(*it) for it in intervals)
+        sigs.append(sig)
+
+    parts: List[str] = []
+    i = 0
+    while i < 7:
+        sig = sigs[i]
+        j = i
+        while j + 1 < 7 and sigs[j + 1] == sig:
+            j += 1
+        day_label = DAY_NAMES[i] if i == j else f"{DAY_NAMES[i]}～{DAY_NAMES[j]}"
+        if sig == "CLOSED":
+            parts.append(f"{day_label} 公休")
+        else:
+            parts.append(f"{day_label} {sig}")
+        i = j + 1
+
+    return "；".join(parts)
+
+def summarize_resources(res: List[Dict[str, Any]]) -> str:
+    if not res:
+        return "（無）"
+    items = []
+    for r in sorted(res, key=lambda x: int(x.get("party_size", 0))):
+        ps = int(r["party_size"])
+        st = int(r["spots_total"])
+        items.append(f"{ps} 人桌 {st} 張")
+    return "、".join(items)
+
+
+# =========================
+# Recommendation algorithm (slot-based / capacity constraint)
+# =========================
+
+def hhmm_to_minutes(hhmm: str) -> int:
+    s = str(hhmm).zfill(4)
+    return int(s[:2]) * 60 + int(s[2:])
+
+def minutes_to_hhmm(minutes: int) -> str:
+    minutes = max(0, int(minutes))
+    hh = minutes // 60
+    mm = minutes % 60
+    return f"{hh:02d}{mm:02d}"
+
+def compute_booking_hours_json(business_hours_json: List[Dict[str, Any]], duration_sec: int) -> List[Dict[str, Any]]:
+    """
+    線上可訂入座時間 = 營業時段內，最後可訂入座時間 close - duration
+    """
+    dur_min = max(0, int(duration_sec) // 60)
+    out: List[Dict[str, Any]] = []
+
+    for p in business_hours_json:
+        o = p["open"]; c = p["close"]
+        od = int(o["day"]); cd = int(c["day"])
+        ot = str(o["time"]).zfill(4)
+        ct = str(c["time"]).zfill(4)
+
+        # 跨日（少見）先原樣
+        if od != cd:
+            out.append({"open": {"day": od, "time": ot}, "close": {"day": cd, "time": ct}})
+            continue
+
+        otm = hhmm_to_minutes(ot)
+        ctm = hhmm_to_minutes(ct)
+        last_start = ctm - dur_min
+        # 若時段太短，至少讓 last_start 不小於 open（可能變成只剩一個可訂點）
+        last_start = max(otm, last_start)
+
+        out.append({"open": {"day": od, "time": ot}, "close": {"day": od, "time": minutes_to_hhmm(last_start)}})
+
+    return out
+
+def typical_party_size_from_resources(resources: List[Dict[str, Any]]) -> int:
+    """
+    用 spots_total 加權中位數推估典型人數（穩定、可解釋）
+    """
+    items = []
+    total_w = 0
+    for r in resources:
+        ps = int(r["party_size"])
+        w = int(r["spots_total"])
+        if w <= 0:
+            continue
+        items.append((ps, w))
+        total_w += w
+    if not items:
+        return max(int(r["party_size"]) for r in resources)
+
+    items.sort(key=lambda x: x[0])
+    cum = 0
+    half = (total_w + 1) / 2
+    for ps, w in items:
+        cum += w
+        if cum >= half:
+            return ps
+    return items[-1][0]
+
+def compute_peak_online_policy(
+    capacity_hint: int,
+    resources: List[Dict[str, Any]],
+    duration_sec: int,
+    ratio: float,
+    peak_strategy: str,
+    goal_type: str,
+    no_show_tolerance: str,
+    slot_minutes: int = 30,
+) -> Dict[str, int]:
+    """
+    slot-based admission control：
+    - seat_budget：忙時線上座位預算（capacity * ratio，再按目標與放鳥容忍微調）
+    - party_limit_per_slot：每個 slot 最多新增幾組線上訂位（粗估）
+    """
+    slot_minutes = int(slot_minutes)
+    slot_minutes = max(10, min(slot_minutes, 120))
+
+    typical_ps = typical_party_size_from_resources(resources)
+    duration_min = duration_sec / 60.0
+    k = max(1, math.ceil(duration_min / slot_minutes))  # 一組客人佔用 slot 數
+
+    if peak_strategy == "no_online":
+        return {
+            "peak_slot_minutes": slot_minutes,
+            "peak_online_seat_budget": 0,
+            "peak_online_party_limit_per_slot": 0,
+            "typical_party_size": int(typical_ps),
+            "duration_slots": int(k),
+        }
+
+    base = int(math.floor(capacity_hint * float(ratio)))
+
+    goal_factor = {"fill_seats": 1.05, "control_queue": 1.00, "keep_walkin": 0.80}.get(goal_type, 1.00)
+    ns_factor = {"low": 0.90, "medium": 1.00, "high": 1.05}.get(no_show_tolerance, 1.00)
+
+    seat_budget = int(math.floor(base * goal_factor * ns_factor))
+    seat_budget = max(0, min(seat_budget, capacity_hint))
+
+    denom = max(1, typical_ps * k)
+    party_limit = seat_budget // denom
+    if seat_budget > 0 and party_limit == 0:
+        party_limit = 1
+
+    return {
+        "peak_slot_minutes": slot_minutes,
+        "peak_online_seat_budget": int(seat_budget),
+        "peak_online_party_limit_per_slot": int(party_limit),
+        "typical_party_size": int(typical_ps),
+        "duration_slots": int(k),
+    }
+
+
+# =========================
+# LLM Extractor (只抽 JSON，不聊天)
 # =========================
 
 EXTRACTOR_SYSTEM = r"""
 你是一個「資料抽取器」，只負責把使用者回答轉成 JSON patch。
-你必須只輸出一段 JSON object（不要文字、不要解釋、不要換行前後多餘內容）。
+你必須只輸出一段 JSON object（不要文字、不要解釋）。
 不可包含 Markdown code block。
 若資訊不足或無法判斷，輸出空物件 {}。
 
@@ -157,23 +348,54 @@ def call_ollama(messages: List[Dict[str, str]]) -> str:
     resp.raise_for_status()
     return resp.json()["message"]["content"]
 
+def extract_first_json_object_str(text: str) -> Optional[str]:
+    """
+    從模型輸出中抓第一個完整 JSON object 字串（更耐髒輸出）
+    """
+    if not text:
+        return None
+    s = text.strip().strip("`").strip()
+    start = s.find("{")
+    if start < 0:
+        return None
+
+    depth = 0
+    in_str = False
+    esc = False
+    for i in range(start, len(s)):
+        ch = s[i]
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+        else:
+            if ch == '"':
+                in_str = True
+            elif ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    return s[start:i+1]
+    return None
+
 def parse_json_object(text: str) -> Optional[Dict[str, Any]]:
-    text = text.strip().strip("`").strip()
-    if not text.startswith("{"):
+    obj_str = extract_first_json_object_str(text)
+    if not obj_str:
         return None
     try:
-        obj = json.loads(text)
+        obj = json.loads(obj_str)
         return obj if isinstance(obj, dict) else None
     except Exception:
         return None
 
 def llm_extract(step_name: str, user_text: str, state: Dict[str, Any]) -> Dict[str, Any]:
-    # 把需求講清楚：每一步要輸出的 schema
-    # 注意：這裡是給模型看的，不會展示給商家
     schema_guide = {
         "store_name": r'輸出：{"store_name": "<非空字串>"}',
         "resources": r'輸出：{"resources":[{"party_size":4,"spots_total":5},{"party_size":6,"spots_total":2}]}  party_size/spots_total 都是整數',
-        "duration_sec": r'輸出：{"duration_sec":3600} 或 5400 或 7200（秒）',
         "business_hours_json": r'''輸出：{"business_hours_json":[
   {"open":{"day":0,"time":"0800"},"close":{"day":0,"time":"1700"}},
   ...
@@ -186,31 +408,30 @@ time: 必須是 4 位 HHMM 字串，例如 "0830"
         "max_party_size": r'輸出：{"strategy":{"max_party_size":8}}（整數）',
         "online_role": r'輸出：{"strategy":{"online_role":"primary"}} 或 "assistant" 或 "minimal"',
         "peak_periods": r'輸出：{"strategy":{"peak_periods":["weekend_brunch"]}} 允許值：weekday_lunch,weekday_dinner,weekend_brunch,weekend_dinner',
-        "peak_online_quota_ratio": r'輸出：{"strategy":{"peak_online_quota_ratio":0.5}}（0.8/0.5/0.2 其一）',
+        "peak_online_quota_ratio": r'輸出：{"strategy":{"peak_online_quota_ratio":0.5}}（0.8/0.5/0.2/0.0 其一）',
         "peak_strategy": r'輸出：{"strategy":{"peak_strategy":"online_first"}} 或 "walkin_first" 或 "no_online"',
         "no_show_tolerance": r'輸出：{"strategy":{"no_show_tolerance":"medium"}} 或 low/high',
         "recommendation_patch": r'''
-                你可以輸出以下欄位（可只輸出其中一部分，沒提到的不要輸出）：
-                {
-                "booking_hours_json":[
-                    {"open":{"day":0,"time":"0800"},"close":{"day":0,"time":"1600"}},
-                    ...
-                ],
-                "strategy":{
-                    "peak_strategy":"online_first" 或 "walkin_first" 或 "no_online",
-                    "peak_online_quota_ratio": 0.8 或 0.5 或 0.2 或 0.0,
-                    "peak_online_resources":[
-                    {"party_size":4,"spots_total":2},
-                    {"party_size":6,"spots_total":1}
-                    ]
-                }
-                }
+你可以輸出以下欄位（可只輸出其中一部分，沒提到的不要輸出）：
+{
+  "booking_hours_json":[
+    {"open":{"day":0,"time":"0800"},"close":{"day":0,"time":"1600"}},
+    ...
+  ],
+  "strategy":{
+    "peak_strategy":"online_first" 或 "walkin_first" 或 "no_online",
+    "peak_online_quota_ratio": 0.8 或 0.5 或 0.2 或 0.0,
 
-                規則：
-                - booking_hours_json 格式與 business_hours_json 相同（day 0~6；time 為 4 位 HHMM 字串）
-                - peak_online_resources 的 party_size 必須出現在總 resources 裡
-                - peak_online_resources.spots_total 代表「線上可訂桌數」，必須介於 0 ~ 該桌型總桌數
-                '''
+    "peak_slot_minutes": 30,
+    "peak_online_seat_budget": 20,
+    "peak_online_party_limit_per_slot": 2
+  }
+}
+
+規則：
+- booking_hours_json 格式與 business_hours_json 相同（day 0~6；time 為 4 位 HHMM 字串）
+- peak_slot_minutes / peak_online_seat_budget / peak_online_party_limit_per_slot 必須是整數（>=0）
+'''
     }
 
     guide = schema_guide.get(step_name, "輸出：{}")
@@ -231,217 +452,65 @@ time: 必須是 4 位 HHMM 字串，例如 "0830"
     obj = parse_json_object(raw)
     return obj if obj is not None else {}
 
+
 # =========================
-# FSM Orchestrator（由程式控制問答流程）
+# FSM Orchestrator
 # =========================
+
+SIMPLIFY_TRIGGERS = {"聽不懂", "不用了", "隨便", "你幫我決定"}
 
 def normalize_choice(text: str) -> str:
     t = text.strip().lower()
-    # 支援使用者輸入 a / A / 選項A / 直接文字
     t = t.replace("選項", "").replace(" ", "")
     return t
 
-DAY_NAMES = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"]
+def is_simplify_trigger(text: str) -> bool:
+    t = text.strip()
+    return t in SIMPLIFY_TRIGGERS
 
-def hhmm_to_colon(hhmm: str) -> str:
-    s = str(hhmm).zfill(4)
-    return f"{s[:2]}:{s[2:]}"
+def apply_simplified_strategy_defaults(state: Dict[str, Any]) -> None:
+    # 只針對策略（因為 resources/business hours/duration 仍必須取得才能輸出 FINAL_JSON）
+    merge_patch(state, {
+        "strategy": {
+            "goal_type": "control_queue",
+            "online_role": "assistant",
+            "peak_periods": ["weekend_dinner"],
+            "peak_strategy": "online_first",
+            "peak_online_quota_ratio": 0.5,
+            "no_show_tolerance": "medium",
+            "can_merge_tables": True,
+            "max_party_size": 8,
+        }
+    })
 
-def summarize_business_hours(bh: List[Dict[str, Any]]) -> str:
-    """
-    將 business_hours_json 轉為商家容易確認的字串，例如：
-    週一～週六 08:00–17:00；週日 公休
-    支援同一天多段時段（例如午晚餐），會顯示：11:00–14:00、17:00–21:00
-    """
-    # day -> list of (open_day, open_time, close_day, close_time)
-    day_map: Dict[int, List[Tuple[int, str, int, str]]] = {d: [] for d in range(7)}
-
-    for p in bh:
-        o = p.get("open", {})
-        c = p.get("close", {})
-        od = int(o.get("day"))
-        cd = int(c.get("day"))
-        ot = str(o.get("time")).zfill(4)
-        ct = str(c.get("time")).zfill(4)
-        day_map[od].append((od, ot, cd, ct))
-
-    def interval_text(od: int, ot: str, cd: int, ct: str) -> str:
-        ot2 = hhmm_to_colon(ot)
-        ct2 = hhmm_to_colon(ct)
-        if od == cd:
-            return f"{ot2}–{ct2}"
-        # 跨日（少見，但保底）
-        return f"{ot2}–隔天{ct2}"
-
-    # 每一天做一個「signature」，用來把連續相同營業時間的日子合併成區間
-    sigs: List[str] = []
-    for d in range(7):
-        intervals = day_map.get(d, [])
-        if not intervals:
-            sigs.append("CLOSED")
-            continue
-        # 依開始時間排序
-        intervals = sorted(intervals, key=lambda x: x[1])
-        sig = "、".join(interval_text(*it) for it in intervals)
-        sigs.append(sig)
-
-    # 合併連續相同 signature 的日子
-    parts: List[str] = []
-    i = 0
-    while i < 7:
-        sig = sigs[i]
-        j = i
-        while j + 1 < 7 and sigs[j + 1] == sig:
-            j += 1
-
-        day_label = DAY_NAMES[i] if i == j else f"{DAY_NAMES[i]}～{DAY_NAMES[j]}"
-        if sig == "CLOSED":
-            parts.append(f"{day_label} 公休")
-        else:
-            parts.append(f"{day_label} {sig}")
-
-        i = j + 1
-
-    return "；".join(parts)
-
-def hhmm_to_minutes(hhmm: str) -> int:
-    s = str(hhmm).zfill(4)
-    return int(s[:2]) * 60 + int(s[2:])
-
-def minutes_to_hhmm(minutes: int) -> str:
-    minutes = max(0, int(minutes))
-    hh = minutes // 60
-    mm = minutes % 60
-    return f"{hh:02d}{mm:02d}"
-
-def summarize_resources(res: List[Dict[str, Any]]) -> str:
-    # res: [{"party_size":4,"spots_total":2}, ...]
-    if not res:
-        return "（無）"
-    items = []
-    for r in sorted(res, key=lambda x: int(x.get("party_size", 0))):
-        ps = int(r["party_size"])
-        st = int(r["spots_total"])
-        items.append(f"{ps} 人桌 {st} 張")
-    return "、".join(items)
-
-def compute_booking_hours_json(business_hours_json: List[Dict[str, Any]], duration_sec: int) -> List[Dict[str, Any]]:
-    """
-    建議線上訂位可訂入座時段：
-    - 以營業時段為基礎
-    - 最後可訂入座時間 = close_time - 用餐時長
-    """
-    dur_min = max(0, int(duration_sec) // 60)
-    out: List[Dict[str, Any]] = []
-
-    for p in business_hours_json:
-        o = p["open"]; c = p["close"]
-        od = int(o["day"]); cd = int(c["day"])
-        ot = str(o["time"]).zfill(4)
-        ct = str(c["time"]).zfill(4)
-
-        # 跨日先保底照原時段（少見）
-        if od != cd:
-            out.append({"open": {"day": od, "time": ot}, "close": {"day": cd, "time": ct}})
-            continue
-
-        otm = hhmm_to_minutes(ot)
-        ctm = hhmm_to_minutes(ct)
-        last_start = ctm - dur_min
-
-        # 保底：如果扣完小於等於開始，代表時段太短；就不扣（至少不會變成奇怪的 08:00–08:00）
-        if last_start <= otm:
-            last_start = ctm
-
-        out.append({"open": {"day": od, "time": ot}, "close": {"day": od, "time": minutes_to_hhmm(last_start)}})
-
-    return out
-
-def compute_peak_online_resources(total_resources: List[Dict[str, Any]], ratio: float, peak_strategy: str) -> List[Dict[str, Any]]:
-    """
-    建議最忙時段線上開放桌數（按桌型）：
-    - no_online: 全部 0
-    - 其他：按 ratio 分配，每種桌型至少 1 張（如果 ratio>0 且該桌型總張數>0）
-    """
-    if peak_strategy == "no_online":
-        return [{"party_size": int(r["party_size"]), "spots_total": 0} for r in total_resources]
-
-    ratio = float(ratio)
-    out: List[Dict[str, Any]] = []
-    for r in total_resources:
-        ps = int(r["party_size"])
-        tot = int(r["spots_total"])
-        if tot <= 0:
-            out.append({"party_size": ps, "spots_total": 0})
-            continue
-
-        n = int(round(tot * ratio))
-        if ratio > 0 and n == 0:
-            n = 1
-        n = max(0, min(n, tot))
-        out.append({"party_size": ps, "spots_total": n})
-
-    return out
-
-def clamp_online_resources(online_res: List[Dict[str, Any]], total_res: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """
-    把線上桌數限制在 [0, 該桌型總桌數]，並只保留存在的桌型
-    """
-    tot_map = {int(r["party_size"]): int(r["spots_total"]) for r in total_res}
-    out_map = {ps: 0 for ps in tot_map}
-
-    for r in online_res:
-        try:
-            ps = int(r["party_size"])
-            st = int(r["spots_total"])
-        except Exception:
-            continue
-        if ps not in tot_map:
-            continue
-        st = max(0, min(st, tot_map[ps]))
-        out_map[ps] = st
-
-    return [{"party_size": ps, "spots_total": out_map[ps]} for ps in sorted(out_map.keys())]
-
-def merge_online_resources(base: List[Dict[str, Any]], patch: List[Dict[str, Any]], total_res: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """
-    允許使用者只改某些桌型，其餘沿用原建議
-    """
-    base_map = {int(r["party_size"]): int(r["spots_total"]) for r in base}
-    for r in patch:
-        try:
-            ps = int(r["party_size"])
-            st = int(r["spots_total"])
-        except Exception:
-            continue
-        base_map[ps] = st
-
-    merged = [{"party_size": ps, "spots_total": base_map.get(ps, 0)} for ps in sorted({int(r["party_size"]) for r in total_res})]
-    return clamp_online_resources(merged, total_res)
+def clamp_int(v: Any, lo: int, hi: int) -> int:
+    try:
+        vv = int(v)
+    except Exception:
+        return lo
+    return max(lo, min(vv, hi))
 
 def main():
-    # 初始 state：store_id 可為 None，符合 validator
     state: Dict[str, Any] = {
         "store_id": None,
-        "strategy": {
-            # Google Reserve 前提固定值（如果你後端需要，也可放這裡）
-            # allow_same_day: false, advance_days_min: 1 (不在 validator schema，先不放)
-        }
+        "strategy": {}
     }
 
     print("✅ Onboarding FSM Agent 已啟動（輸入 exit 離開）\n")
 
-    # Step 1：店名（必須第一句只問這個）
+    # Step 1：店名
     while True:
         print("🤖 Agent：\n請問店名是什麼？")
         user_in = input("\n你：").strip()
         if user_in.lower() in ("exit", "quit"):
             print("Bye")
             return
+
         patch = llm_extract("store_name", user_in, state)
         if "store_name" in patch and isinstance(patch["store_name"], str) and patch["store_name"].strip():
             merge_patch(state, {"store_name": patch["store_name"].strip()})
             break
+
         print("🤖 Agent：\n我沒有聽清楚店名，可以再說一次嗎？\n")
 
     # Step 2：桌型 resources
@@ -451,12 +520,14 @@ def main():
         if user_in.lower() in ("exit", "quit"):
             print("Bye")
             return
+
         patch = llm_extract("resources", user_in, state)
         res = patch.get("resources")
         ok, msg = validate_resources(res)
         if ok:
             merge_patch(state, {"resources": res})
             break
+
         print(f"🤖 Agent：\n我需要的是像「4人桌5張、6人桌2張」這樣的資訊，可以再講一次嗎？（{msg}）\n")
 
     # Step 3：用餐時間 duration_sec（用選項固定）
@@ -468,7 +539,6 @@ def main():
             return
 
         c = normalize_choice(user_in)
-        # 優先用規則處理（更穩），LLM 當備援
         if c in ("a", "1", "60", "60分鐘", "一小時", "1小時"):
             merge_patch(state, {"duration_sec": 3600})
             break
@@ -479,19 +549,16 @@ def main():
             merge_patch(state, {"duration_sec": 7200})
             break
 
-        patch = llm_extract("duration_sec", user_in, state)
-        dur = patch.get("duration_sec")
-        if isinstance(dur, int) and dur in (3600, 5400, 7200):
-            merge_patch(state, {"duration_sec": dur})
-            break
-
         print("🤖 Agent：\n我這邊只需要 A / B / C 三選一即可～再選一次：\n")
 
-    # Step 4：營業時間 business_hours_json
+    # Step 4：營業時間 business_hours_json（含摘要確認）
     while True:
         print("\n🤖 Agent：\n你們平常的營業時間大概是什麼時候？例如：每天早上八點到晚上五點。")
         user_in = input("\n你：").strip()
-        ...
+        if user_in.lower() in ("exit", "quit"):
+            print("Bye")
+            return
+
         patch = llm_extract("business_hours_json", user_in, state)
         bh = patch.get("business_hours_json")
         ok, msg = validate_business_hours_json(bh)
@@ -499,16 +566,19 @@ def main():
             summary = summarize_business_hours(bh)
             print(f"\n🤖 Agent：\n我整理一下營業時間：{summary}\n這樣對嗎？\nA. 對\nB. 不對，需要修改")
             ans = input("\n你：").strip()
-            c = normalize_choice(ans)
-            if c in ("a", "對", "是", "yes", "y"):
+            if ans.lower() in ("exit", "quit"):
+                print("Bye")
+                return
+            cc = normalize_choice(ans)
+            if cc in ("a", "對", "是", "yes", "y"):
                 merge_patch(state, {"business_hours_json": bh})
                 break
-            else:
-                print("\n🤖 Agent：\n好的，那你再說一次營業時間，我重新整理。")
-                continue
+            print("\n🤖 Agent：\n好的，那你再說一次營業時間，我重新整理。")
+            continue
+
         print(f"🤖 Agent：\n我需要清楚的「幾點到幾點」以及是否有公休日，例如：週一到週六 08:00–17:00，週日公休。\n（{msg}）\n")
 
-    # Step 5：併桌 can_merge_tables（策略內）
+    # Step 5：併桌 can_merge_tables
     while True:
         print("\n🤖 Agent：\n如果人數比較多，現場可以把桌子併起來使用嗎？\nA. 可以\nB. 不行")
         user_in = input("\n你：").strip()
@@ -516,13 +586,17 @@ def main():
             print("Bye")
             return
 
+        if is_simplify_trigger(user_in):
+            print("\n🤖 Agent：\n沒問題，我先用一個安全的預設幫你把後面的策略設定好。")
+            apply_simplified_strategy_defaults(state)
+            break
+
         c = normalize_choice(user_in)
         if c in ("a", "可以", "可", "yes", "y"):
             merge_patch(state, {"strategy": {"can_merge_tables": True}})
             break
         if c in ("b", "不行", "否", "no", "n"):
             merge_patch(state, {"strategy": {"can_merge_tables": False}})
-            # 若不能併桌，max_party_size 就取桌型最大 party_size
             max_size = max(int(r["party_size"]) for r in state["resources"])
             merge_patch(state, {"strategy": {"max_party_size": max_size}})
             break
@@ -538,248 +612,322 @@ def main():
 
         print("🤖 Agent：\n我只需要選 A 或 B 就好～再選一次：\n")
 
-    # Step 5-2：最大接待人數 max_party_size（若可以併桌才問）
-    if state["strategy"].get("can_merge_tables") is True:
+    # Step 5-2：最大接待人數（只有在 can_merge_tables=True 且尚未有 max_party_size 才問）
+    if state["strategy"].get("can_merge_tables") is True and "max_party_size" not in state["strategy"]:
         while True:
             print("\n🤖 Agent：\n最多大概可以接到幾個人一起用餐？例如 8 人、10 人、12 人。")
             user_in = input("\n你：").strip()
             if user_in.lower() in ("exit", "quit"):
                 print("Bye")
                 return
-            # 先用規則抓數字
+
             m = re.search(r"(\d+)", user_in)
             if m:
                 n = int(m.group(1))
                 if n > 0:
                     merge_patch(state, {"strategy": {"max_party_size": n}})
                     break
+
             patch = llm_extract("max_party_size", user_in, state)
             s = patch.get("strategy", {})
             if isinstance(s, dict) and isinstance(s.get("max_party_size"), int) and s["max_party_size"] > 0:
                 merge_patch(state, {"strategy": {"max_party_size": s["max_party_size"]}})
                 break
+
             print("🤖 Agent：\n我需要一個人數（例如 8 / 10 / 12），再說一次好嗎？\n")
 
-    # Step 6：線上訂位角色 online_role
-    while True:
-        print("\n🤖 Agent：\n你希望線上訂位在店裡扮演什麼角色？\nA. 主要方式（希望大多數客人先訂位）\nB. 輔助工具（只想避免忙的時候太亂）\nC. 少量開放（主要還是現場）")
-        user_in = input("\n你：").strip()
-        if user_in.lower() in ("exit", "quit"):
-            print("Bye")
-            return
+    # 若 simplify 已經填好 strategy，可能已經有 online_role 等欄位，可直接跳過 Step 6~10
+    if "online_role" not in state["strategy"]:
+        # Step 6：線上訂位角色
+        while True:
+            print("\n🤖 Agent：\n你希望線上訂位在店裡扮演什麼角色？\nA. 主要方式（希望大多數客人先訂位）\nB. 輔助工具（只想避免忙的時候太亂）\nC. 少量開放（主要還是現場）")
+            user_in = input("\n你：").strip()
+            if user_in.lower() in ("exit", "quit"):
+                print("Bye")
+                return
 
-        c = normalize_choice(user_in)
-        if c in ("a", "主要", "主力"):
-            merge_patch(state, {"strategy": {"online_role": "primary"}})
-            break
-        if c in ("b", "輔助", "工具"):
-            merge_patch(state, {"strategy": {"online_role": "assistant"}})
-            break
-        if c in ("c", "少量", "現場"):
-            merge_patch(state, {"strategy": {"online_role": "minimal"}})
-            break
-
-        patch = llm_extract("online_role", user_in, state)
-        s = patch.get("strategy", {})
-        if isinstance(s, dict) and s.get("online_role") in ("primary", "assistant", "minimal"):
-            merge_patch(state, {"strategy": {"online_role": s["online_role"]}})
-            break
-
-        print("🤖 Agent：\n我只需要選 A / B / C 其中一個～再選一次：\n")
-
-    # Step 7：最忙時段 peak_periods
-    while True:
-        print("\n🤖 Agent：\n你覺得店裡最容易忙起來的是哪一段？\nA. 平日中午\nB. 平日晚餐\nC. 假日中午\nD. 假日晚餐\nE. 不太確定（交給系統）")
-        user_in = input("\n你：").strip()
-        if user_in.lower() in ("exit", "quit"):
-            print("Bye")
-            return
-
-        c = normalize_choice(user_in)
-        if c in ("a", "平日中午"):
-            merge_patch(state, {"strategy": {"peak_periods": ["weekday_lunch"]}})
-            break
-        if c in ("b", "平日晚餐"):
-            merge_patch(state, {"strategy": {"peak_periods": ["weekday_dinner"]}})
-            break
-        if c in ("c", "假日中午"):
-            merge_patch(state, {"strategy": {"peak_periods": ["weekend_brunch"]}})
-            break
-        if c in ("d", "假日晚餐"):
-            merge_patch(state, {"strategy": {"peak_periods": ["weekend_dinner"]}})
-            break
-        if c in ("e", "不確定", "交給系統", "隨便"):
-            merge_patch(state, {"strategy": {"peak_periods": ["weekend_dinner"]}})
-            break
-
-        patch = llm_extract("peak_periods", user_in, state)
-        s = patch.get("strategy", {})
-        if isinstance(s, dict) and isinstance(s.get("peak_periods"), list):
-            # validate allowed values
-            allowed = {"weekday_lunch","weekday_dinner","weekend_brunch","weekend_dinner"}
-            if all(x in allowed for x in s["peak_periods"]) and len(s["peak_periods"]) > 0:
-                merge_patch(state, {"strategy": {"peak_periods": s["peak_periods"]}})
+            if is_simplify_trigger(user_in):
+                print("\n🤖 Agent：\n沒問題，我先用一個安全的預設幫你把後面的策略設定好。")
+                apply_simplified_strategy_defaults(state)
                 break
 
-        print("🤖 Agent：\n我只需要選 A / B / C / D / E 其中一個～再選一次：\n")
+            c = normalize_choice(user_in)
+            if c in ("a", "主要", "主力"):
+                merge_patch(state, {"strategy": {"online_role": "primary"}})
+                break
+            if c in ("b", "輔助", "工具"):
+                merge_patch(state, {"strategy": {"online_role": "assistant"}})
+                break
+            if c in ("c", "少量", "現場"):
+                merge_patch(state, {"strategy": {"online_role": "minimal"}})
+                break
 
-    # Step 8：忙時線上配額 peak_online_quota_ratio
-    while True:
-        print("\n🤖 Agent：\n在最忙的時段，你希望線上訂位大概佔多少位置？\nA. 大部分（約 80%）\nB. 一半左右（約 50%）\nC. 少量即可（約 20%）")
-        user_in = input("\n你：").strip()
-        if user_in.lower() in ("exit", "quit"):
-            print("Bye")
-            return
+            patch = llm_extract("online_role", user_in, state)
+            s = patch.get("strategy", {})
+            if isinstance(s, dict) and s.get("online_role") in ("primary", "assistant", "minimal"):
+                merge_patch(state, {"strategy": {"online_role": s["online_role"]}})
+                break
 
-        c = normalize_choice(user_in)
-        if c in ("a", "80", "80%", "大部分"):
-            merge_patch(state, {"strategy": {"peak_online_quota_ratio": 0.8}})
-            break
-        if c in ("b", "50", "50%", "一半"):
-            merge_patch(state, {"strategy": {"peak_online_quota_ratio": 0.5}})
-            break
-        if c in ("c", "20", "20%", "少量"):
-            merge_patch(state, {"strategy": {"peak_online_quota_ratio": 0.2}})
-            break
+            print("🤖 Agent：\n我只需要選 A / B / C 其中一個～再選一次：\n")
 
-        patch = llm_extract("peak_online_quota_ratio", user_in, state)
-        s = patch.get("strategy", {})
-        if isinstance(s, dict) and s.get("peak_online_quota_ratio") in (0.8, 0.5, 0.2):
-            merge_patch(state, {"strategy": {"peak_online_quota_ratio": s["peak_online_quota_ratio"]}})
-            break
+    if "peak_periods" not in state["strategy"]:
+        # Step 7：最忙時段
+        while True:
+            print("\n🤖 Agent：\n你覺得店裡最容易忙起來的是哪一段？\nA. 平日中午\nB. 平日晚餐\nC. 假日中午\nD. 假日晚餐\nE. 不太確定（交給系統）")
+            user_in = input("\n你：").strip()
+            if user_in.lower() in ("exit", "quit"):
+                print("Bye")
+                return
 
-        print("🤖 Agent：\n我只需要選 A / B / C 其中一個～再選一次：\n")
+            if is_simplify_trigger(user_in):
+                print("\n🤖 Agent：\n沒問題，我先用一個安全的預設幫你把後面的策略設定好。")
+                apply_simplified_strategy_defaults(state)
+                break
 
-    # Step 9：忙時策略 peak_strategy
-    while True:
-        print("\n🤖 Agent：\n在最忙的時候，你比較希望怎麼做？\nA. 先讓線上訂位進來，比較好控制\nB. 留比較多位置給現場客\nC. 忙的時候就不開線上訂位")
-        user_in = input("\n你：").strip()
-        if user_in.lower() in ("exit", "quit"):
-            print("Bye")
-            return
+            c = normalize_choice(user_in)
+            if c in ("a", "平日中午"):
+                merge_patch(state, {"strategy": {"peak_periods": ["weekday_lunch"]}})
+                break
+            if c in ("b", "平日晚餐"):
+                merge_patch(state, {"strategy": {"peak_periods": ["weekday_dinner"]}})
+                break
+            if c in ("c", "假日中午"):
+                merge_patch(state, {"strategy": {"peak_periods": ["weekend_brunch"]}})
+                break
+            if c in ("d", "假日晚餐"):
+                merge_patch(state, {"strategy": {"peak_periods": ["weekend_dinner"]}})
+                break
+            if c in ("e", "不確定", "交給系統", "隨便"):
+                merge_patch(state, {"strategy": {"peak_periods": ["weekend_dinner"]}})
+                break
 
-        c = normalize_choice(user_in)
-        if c in ("a", "先讓線上", "好控制"):
-            merge_patch(state, {"strategy": {"peak_strategy": "online_first"}})
-            break
-        if c in ("b", "留給現場", "現場客"):
-            merge_patch(state, {"strategy": {"peak_strategy": "walkin_first"}})
-            break
-        if c in ("c", "不開", "關掉", "no"):
-            merge_patch(state, {"strategy": {"peak_strategy": "no_online"}})
-            break
+            patch = llm_extract("peak_periods", user_in, state)
+            s = patch.get("strategy", {})
+            if isinstance(s, dict) and isinstance(s.get("peak_periods"), list):
+                allowed = {"weekday_lunch","weekday_dinner","weekend_brunch","weekend_dinner"}
+                if all(x in allowed for x in s["peak_periods"]) and len(s["peak_periods"]) > 0:
+                    merge_patch(state, {"strategy": {"peak_periods": s["peak_periods"]}})
+                    break
 
-        patch = llm_extract("peak_strategy", user_in, state)
-        s = patch.get("strategy", {})
-        if isinstance(s, dict) and s.get("peak_strategy") in ("online_first", "walkin_first", "no_online"):
-            merge_patch(state, {"strategy": {"peak_strategy": s["peak_strategy"]}})
-            break
+            print("🤖 Agent：\n我只需要選 A / B / C / D / E 其中一個～再選一次：\n")
 
-        print("🤖 Agent：\n我只需要選 A / B / C 其中一個～再選一次：\n")
+    if "peak_online_quota_ratio" not in state["strategy"]:
+        # Step 8：忙時線上配額比例
+        while True:
+            print("\n🤖 Agent：\n在最忙的時段，你希望線上訂位大概佔多少位置？\nA. 大部分（約 80%）\nB. 一半左右（約 50%）\nC. 少量即可（約 20%）")
+            user_in = input("\n你：").strip()
+            if user_in.lower() in ("exit", "quit"):
+                print("Bye")
+                return
 
-    # Step 10：no-show 容忍 no_show_tolerance
-    while True:
-        print("\n🤖 Agent：\n如果 10 組線上訂位，有 1～2 組沒來，你可以接受嗎？\nA. 不太能接受\nB. 勉強可以\nC. 可以接受")
-        user_in = input("\n你：").strip()
-        if user_in.lower() in ("exit", "quit"):
-            print("Bye")
-            return
+            if is_simplify_trigger(user_in):
+                print("\n🤖 Agent：\n沒問題，我先用一個安全的預設幫你把後面的策略設定好。")
+                apply_simplified_strategy_defaults(state)
+                break
 
-        c = normalize_choice(user_in)
-        if c in ("a", "不太能", "不能"):
-            merge_patch(state, {"strategy": {"no_show_tolerance": "low"}})
-            break
-        if c in ("b", "勉強", "還行"):
-            merge_patch(state, {"strategy": {"no_show_tolerance": "medium"}})
-            break
-        if c in ("c", "可以", "能接受"):
-            merge_patch(state, {"strategy": {"no_show_tolerance": "high"}})
-            break
+            c = normalize_choice(user_in)
+            if c in ("a", "80", "80%", "大部分"):
+                merge_patch(state, {"strategy": {"peak_online_quota_ratio": 0.8}})
+                break
+            if c in ("b", "50", "50%", "一半"):
+                merge_patch(state, {"strategy": {"peak_online_quota_ratio": 0.5}})
+                break
+            if c in ("c", "20", "20%", "少量"):
+                merge_patch(state, {"strategy": {"peak_online_quota_ratio": 0.2}})
+                break
 
-        patch = llm_extract("no_show_tolerance", user_in, state)
-        s = patch.get("strategy", {})
-        if isinstance(s, dict) and s.get("no_show_tolerance") in ("low", "medium", "high"):
-            merge_patch(state, {"strategy": {"no_show_tolerance": s["no_show_tolerance"]}})
-            break
+            patch = llm_extract("peak_online_quota_ratio", user_in, state)
+            s = patch.get("strategy", {})
+            if isinstance(s, dict) and s.get("peak_online_quota_ratio") in (0.8, 0.5, 0.2, 0.0):
+                merge_patch(state, {"strategy": {"peak_online_quota_ratio": s["peak_online_quota_ratio"]}})
+                break
 
-        print("🤖 Agent：\n我只需要選 A / B / C 其中一個～再選一次：\n")
+            print("🤖 Agent：\n我只需要選 A / B / C 其中一個～再選一次：\n")
 
-        # =========================
-    # Step 11：AI 建議 → A 接受 / B 修改
-    # 建議內容：booking_hours_json（可訂入座時間）＋ peak_online_resources（忙時線上桌數）
+    if "peak_strategy" not in state["strategy"]:
+        # Step 9：忙時策略
+        while True:
+            print("\n🤖 Agent：\n在最忙的時候，你比較希望怎麼做？\nA. 先讓線上訂位進來，比較好控制\nB. 留比較多位置給現場客\nC. 忙的時候就不開線上訂位")
+            user_in = input("\n你：").strip()
+            if user_in.lower() in ("exit", "quit"):
+                print("Bye")
+                return
+
+            if is_simplify_trigger(user_in):
+                print("\n🤖 Agent：\n沒問題，我先用一個安全的預設幫你把後面的策略設定好。")
+                apply_simplified_strategy_defaults(state)
+                break
+
+            c = normalize_choice(user_in)
+            if c in ("a", "先讓線上", "好控制"):
+                merge_patch(state, {"strategy": {"peak_strategy": "online_first"}})
+                break
+            if c in ("b", "留給現場", "現場客"):
+                merge_patch(state, {"strategy": {"peak_strategy": "walkin_first"}})
+                break
+            if c in ("c", "不開", "關掉", "no"):
+                merge_patch(state, {"strategy": {"peak_strategy": "no_online"}})
+                break
+
+            patch = llm_extract("peak_strategy", user_in, state)
+            s = patch.get("strategy", {})
+            if isinstance(s, dict) and s.get("peak_strategy") in ("online_first", "walkin_first", "no_online"):
+                merge_patch(state, {"strategy": {"peak_strategy": s["peak_strategy"]}})
+                break
+
+            print("🤖 Agent：\n我只需要選 A / B / C 其中一個～再選一次：\n")
+
+    if "no_show_tolerance" not in state["strategy"]:
+        # Step 10：no-show 容忍
+        while True:
+            print("\n🤖 Agent：\n如果 10 組線上訂位，有 1～2 組沒來，你可以接受嗎？\nA. 不太能接受\nB. 勉強可以\nC. 可以接受")
+            user_in = input("\n你：").strip()
+            if user_in.lower() in ("exit", "quit"):
+                print("Bye")
+                return
+
+            if is_simplify_trigger(user_in):
+                print("\n🤖 Agent：\n沒問題，我先用一個安全的預設幫你把後面的策略設定好。")
+                apply_simplified_strategy_defaults(state)
+                break
+
+            c = normalize_choice(user_in)
+            if c in ("a", "不太能", "不能"):
+                merge_patch(state, {"strategy": {"no_show_tolerance": "low"}})
+                break
+            if c in ("b", "勉強", "還行"):
+                merge_patch(state, {"strategy": {"no_show_tolerance": "medium"}})
+                break
+            if c in ("c", "可以", "能接受"):
+                merge_patch(state, {"strategy": {"no_show_tolerance": "high"}})
+                break
+
+            patch = llm_extract("no_show_tolerance", user_in, state)
+            s = patch.get("strategy", {})
+            if isinstance(s, dict) and s.get("no_show_tolerance") in ("low", "medium", "high"):
+                merge_patch(state, {"strategy": {"no_show_tolerance": s["no_show_tolerance"]}})
+                break
+
+            print("🤖 Agent：\n我只需要選 A / B / C 其中一個～再選一次：\n")
+
+    # goal_type：由程式推導（如果 simplify 已經填了就不覆蓋）
+    if "goal_type" not in state["strategy"]:
+        online_role = state["strategy"]["online_role"]
+        if online_role == "primary":
+            goal_type = "fill_seats"
+        elif online_role == "assistant":
+            goal_type = "control_queue"
+        else:
+            goal_type = "keep_walkin"
+        merge_patch(state, {"strategy": {"goal_type": goal_type}})
+
+    # capacity_hint（Step 11 用得到）
+    merge_patch(state, {"capacity_hint": capacity_hint_from_resources(state["resources"])})
+
+    # =========================
+    # Step 11：AI 建議 → A 接受 / B 修改（slot-based / capacity constraint）
     # =========================
 
-    # 先用「可控的規則」算一份保底建議（一定合法）
-    fallback_booking = compute_booking_hours_json(state["business_hours_json"], state["duration_sec"])
-    ratio = float(state["strategy"].get("peak_online_quota_ratio", 0.5))
-    peak_strategy_local = state["strategy"]["peak_strategy"]
-    fallback_peak_online = compute_peak_online_resources(state["resources"], ratio, peak_strategy_local)
-
-    # 再嘗試用 AI 產出建議 patch（不合法就用 fallback）
-    ai_patch = llm_extract(
-        "recommendation_patch",
-        "請根據已知資訊提出「線上訂位開放時間」與「最忙時段線上可訂桌數」的建議。",
-        state
-    )
-
-    # 取 booking_hours_json
-    booking_hours = ai_patch.get("booking_hours_json", fallback_booking)
+    # 保底演算法建議（一定可算）
+    booking_hours = compute_booking_hours_json(state["business_hours_json"], state["duration_sec"])
     ok_bh, _ = validate_business_hours_json(booking_hours)
     if not ok_bh:
-        booking_hours = fallback_booking
+        booking_hours = state["business_hours_json"]
 
-    # 取 peak_strategy / ratio（可選）
-    ai_strategy = ai_patch.get("strategy", {}) if isinstance(ai_patch.get("strategy"), dict) else {}
-    if ai_strategy.get("peak_strategy") in ("online_first", "walkin_first", "no_online"):
-        peak_strategy_local = ai_strategy["peak_strategy"]
-    if ai_strategy.get("peak_online_quota_ratio") in (0.8, 0.5, 0.2, 0.0):
-        ratio = float(ai_strategy["peak_online_quota_ratio"])
+    ratio = float(state["strategy"].get("peak_online_quota_ratio", 0.5))
+    peak_strategy_local = state["strategy"]["peak_strategy"]
+    policy = compute_peak_online_policy(
+        capacity_hint=state["capacity_hint"],
+        resources=state["resources"],
+        duration_sec=state["duration_sec"],
+        ratio=ratio,
+        peak_strategy=peak_strategy_local,
+        goal_type=state["strategy"]["goal_type"],
+        no_show_tolerance=state["strategy"]["no_show_tolerance"],
+        slot_minutes=30
+    )
 
-    # 取 peak_online_resources
-    peak_online = ai_strategy.get("peak_online_resources", fallback_peak_online)
-    ok_res, _ = validate_resources(peak_online)
-    if not ok_res:
-        peak_online = compute_peak_online_resources(state["resources"], ratio, peak_strategy_local)
-    peak_online = clamp_online_resources(peak_online, state["resources"])
+    # AI 先「看過」並可提出 patch（可選）
+    ai_patch = llm_extract(
+        "recommendation_patch",
+        "請根據已知資訊提出建議（若不需要改動就輸出 {}）。",
+        {**state, "booking_hours_json": booking_hours, "strategy": {**state["strategy"], **policy}}
+    )
 
-    # 若策略是 no_online，保守地把忙時線上桌數歸零（一致性）
+    # 套用 AI patch（有夾值保護）
+    if "booking_hours_json" in ai_patch:
+        bh2 = ai_patch["booking_hours_json"]
+        ok2, _ = validate_business_hours_json(bh2)
+        if ok2:
+            booking_hours = bh2
+
+    s2 = ai_patch.get("strategy", {}) if isinstance(ai_patch.get("strategy"), dict) else {}
+
+    if s2.get("peak_strategy") in ("online_first", "walkin_first", "no_online"):
+        peak_strategy_local = s2["peak_strategy"]
+    if s2.get("peak_online_quota_ratio") in (0.8, 0.5, 0.2, 0.0):
+        ratio = float(s2["peak_online_quota_ratio"])
+
+    if "peak_slot_minutes" in s2:
+        policy["peak_slot_minutes"] = clamp_int(s2["peak_slot_minutes"], 10, 120)
+    if "peak_online_seat_budget" in s2:
+        policy["peak_online_seat_budget"] = clamp_int(s2["peak_online_seat_budget"], 0, state["capacity_hint"])
+    if "peak_online_party_limit_per_slot" in s2:
+        policy["peak_online_party_limit_per_slot"] = clamp_int(s2["peak_online_party_limit_per_slot"], 0, 999)
+
+    # 收斂一致性：若策略/比例有改，重新算 policy（更穩）
     if peak_strategy_local == "no_online":
-        peak_online = compute_peak_online_resources(state["resources"], ratio, "no_online")
         ratio = 0.0
+    policy = compute_peak_online_policy(
+        capacity_hint=state["capacity_hint"],
+        resources=state["resources"],
+        duration_sec=state["duration_sec"],
+        ratio=ratio,
+        peak_strategy=peak_strategy_local,
+        goal_type=state["strategy"]["goal_type"],
+        no_show_tolerance=state["strategy"]["no_show_tolerance"],
+        slot_minutes=policy.get("peak_slot_minutes", 30)
+    )
 
-    # 進入「顯示建議 → 接受/修改」迴圈
+    # 商家確認/修改迴圈
     while True:
-        print("\n🤖 Agent：\n我根據你剛剛提供的資訊，整理了一個線上訂位建議，給你快速確認：")
-        print(f"1) 線上訂位開放時間（最後可訂入座時間）：{summarize_business_hours(booking_hours)}")
+        print("\n🤖 Agent：\n我整理了一個線上訂位建議，給你快速確認：")
+        print(f"1) 線上訂位可訂入座時間：{summarize_business_hours(booking_hours)}")
 
         if peak_strategy_local == "no_online":
             print("2) 在你最忙的時段：建議不開放線上訂位（全部留給現場）。")
         else:
-            print(f"2) 在你最忙的時段：建議線上可訂桌數約為：{summarize_resources(peak_online)}")
-            print(f"   （線上佔比參考：{int(ratio*100)}%）")
+            print("2) 在你最忙的時段：")
+            print(f"   - 以每 {policy['peak_slot_minutes']} 分鐘為一個時段")
+            print(f"   - 建議線上座位預算：約 {policy['peak_online_seat_budget']} 位")
+            print(f"   - 建議每個時段最多新增線上訂位：約 {policy['peak_online_party_limit_per_slot']} 組")
+            print(f"   （推估典型訂位人數：{policy['typical_party_size']} 人；每組用餐約佔 {policy['duration_slots']} 個時段）")
 
         print("\nA. 直接採用這個建議\nB. 我想調整")
         ans = input("\n你：").strip()
+        if ans.lower() in ("exit", "quit"):
+            print("Bye")
+            return
         c = normalize_choice(ans)
 
         if c in ("a", "ok", "對", "接受", "好", "yes", "y"):
-            # 確認採用：寫回 state
             merge_patch(state, {
                 "booking_hours_json": booking_hours,
                 "strategy": {
                     "peak_strategy": peak_strategy_local,
                     "peak_online_quota_ratio": ratio,
-                    "peak_online_resources": peak_online
+                    "peak_slot_minutes": policy["peak_slot_minutes"],
+                    "peak_online_seat_budget": policy["peak_online_seat_budget"],
+                    "peak_online_party_limit_per_slot": policy["peak_online_party_limit_per_slot"],
                 }
             })
             break
 
-        # 修改模式
         print("\n🤖 Agent：\n沒問題～你想怎麼調整？你可以直接說：\n"
               "- 例如「線上訂位時間改成每天 09:00–16:00」\n"
-              "- 或「忙時 4 人桌 2 張、6 人桌 1 張」\n"
-              "- 或「忙的時候也要開線上訂位」/「忙的時候不開」\n"
-              "- 也可以一起說")
+              "- 或「忙的時候每 30 分鐘最多 2 組線上訂位」\n"
+              "- 或「忙的時候線上最多留 15 個位子」\n"
+              "- 或「忙的時候不開線上訂位」\n")
         mod = input("\n你：").strip()
         if mod.lower() in ("exit", "quit"):
             print("Bye")
@@ -788,68 +936,50 @@ def main():
         mod_patch = llm_extract(
             "recommendation_patch",
             mod,
-            {
-                **state,
-                "booking_hours_json": booking_hours,
-                "strategy": {**state["strategy"], "peak_online_resources": peak_online}
-            }
+            {**state, "booking_hours_json": booking_hours, "strategy": {**state["strategy"], **policy}}
         )
 
-        # 套用 booking_hours_json（若有）
         if "booking_hours_json" in mod_patch:
             bh2 = mod_patch["booking_hours_json"]
-            ok_bh2, msg_bh2 = validate_business_hours_json(bh2)
-            if ok_bh2:
+            ok2, msg2 = validate_business_hours_json(bh2)
+            if ok2:
                 booking_hours = bh2
             else:
-                print(f"🤖 Agent：\n我沒有讀懂你要改的「時間」（{msg_bh2}），這部分先不改。")
+                print(f"🤖 Agent：\n我沒有讀懂你要改的時間（{msg2}），這部分先不改。")
 
-        # 套用 strategy（若有）
-        s2 = mod_patch.get("strategy", {}) if isinstance(mod_patch.get("strategy"), dict) else {}
+        s3 = mod_patch.get("strategy", {}) if isinstance(mod_patch.get("strategy"), dict) else {}
 
-        if s2.get("peak_strategy") in ("online_first", "walkin_first", "no_online"):
-            peak_strategy_local = s2["peak_strategy"]
-            if peak_strategy_local == "no_online":
-                ratio = 0.0
-                peak_online = compute_peak_online_resources(state["resources"], ratio, "no_online")
+        if s3.get("peak_strategy") in ("online_first", "walkin_first", "no_online"):
+            peak_strategy_local = s3["peak_strategy"]
+        if s3.get("peak_online_quota_ratio") in (0.8, 0.5, 0.2, 0.0):
+            ratio = float(s3["peak_online_quota_ratio"])
 
-        if s2.get("peak_online_quota_ratio") in (0.8, 0.5, 0.2, 0.0):
-            ratio = float(s2["peak_online_quota_ratio"])
-            if peak_strategy_local == "no_online":
-                ratio = 0.0
+        if "peak_slot_minutes" in s3:
+            policy["peak_slot_minutes"] = clamp_int(s3["peak_slot_minutes"], 10, 120)
+        if "peak_online_seat_budget" in s3:
+            policy["peak_online_seat_budget"] = clamp_int(s3["peak_online_seat_budget"], 0, state["capacity_hint"])
+        if "peak_online_party_limit_per_slot" in s3:
+            policy["peak_online_party_limit_per_slot"] = clamp_int(s3["peak_online_party_limit_per_slot"], 0, 999)
 
-        if "peak_online_resources" in s2:
-            pr = s2["peak_online_resources"]
-            ok_pr, msg_pr = validate_resources(pr)
-            if ok_pr:
-                peak_online = merge_online_resources(peak_online, pr, state["resources"])
-            else:
-                print(f"🤖 Agent：\n我沒有讀懂你要改的「桌數」（{msg_pr}），這部分先不改。")
-
-        # 若 peak_strategy 不是 no_online，但使用者改到全 0，也允許；反之若 no_online 卻 >0，這裡保守歸零
         if peak_strategy_local == "no_online":
-            peak_online = compute_peak_online_resources(state["resources"], ratio, "no_online")
             ratio = 0.0
 
-    # 由程式推導 goal_type（避免模型亂填）
-    online_role = state["strategy"]["online_role"]
-    if online_role == "primary":
-        goal_type = "fill_seats"
-    elif online_role == "assistant":
-        goal_type = "control_queue"
-    else:
-        goal_type = "keep_walkin"
-    merge_patch(state, {"strategy": {"goal_type": goal_type}})
+        policy = compute_peak_online_policy(
+            capacity_hint=state["capacity_hint"],
+            resources=state["resources"],
+            duration_sec=state["duration_sec"],
+            ratio=ratio,
+            peak_strategy=peak_strategy_local,
+            goal_type=state["strategy"]["goal_type"],
+            no_show_tolerance=state["strategy"]["no_show_tolerance"],
+            slot_minutes=policy.get("peak_slot_minutes", 30)
+        )
 
-    # 確保 can_merge_tables/max_party_size 一定存在（保險）
+    # 保險：必備策略欄位存在
     state["strategy"].setdefault("can_merge_tables", True)
     state["strategy"].setdefault("max_party_size", 8)
 
-    # capacity_hint
-    cap = capacity_hint_from_resources(state["resources"])
-    merge_patch(state, {"capacity_hint": cap})
-
-    # 組 FINAL_JSON（完全符合你的 validator schema）
+    # 組 FINAL_JSON（必備 schema + 額外 booking_hours_json / extra strategy keys）
     final = {
         "store_id": state.get("store_id", None),
         "store_name": state["store_name"],
@@ -857,6 +987,7 @@ def main():
         "resources": state["resources"],
         "duration_sec": state["duration_sec"],
         "business_hours_json": state["business_hours_json"],
+        "booking_hours_json": state.get("booking_hours_json", state["business_hours_json"]),
         "strategy": state["strategy"],
     }
 
