@@ -170,12 +170,15 @@ def run_case(name: str, inputs: list[str], use_real_llm: bool = False):
 
     # 记录问题、输入和AI的回答
     log_data = []
+    question_and_answers = []
 
     for line in out.splitlines():
         if "🤖 Agent：" in line:
             log_data.append(f"問題:\n{line}")
+            question_and_answers.append(f"問題:\n{line}")
         elif "你：" in line:
             log_data.append(f"輸入:\n{line}")
+            question_and_answers.append(f"輸入:\n{line}")
 
     # 抓 FINAL_JSON（你的 main 會 print: FINAL_JSON: {...}）
     final = None
@@ -197,7 +200,7 @@ def run_case(name: str, inputs: list[str], use_real_llm: bool = False):
     # 你也可以加上簡單統計
     turns = out.count("🤖 Agent：")
     print(f"✅ [{name}] PASS | turns={turns} | store_name={final.get('store_name')} | capacity_hint={final.get('capacity_hint')}")
-    
+
     # 將結果寫入檔案
     with open(f"test_results_{name}.txt", "w", encoding="utf-8") as f:
         f.write(f"測試案例: {name}\n")
@@ -209,6 +212,11 @@ def run_case(name: str, inputs: list[str], use_real_llm: bool = False):
         # 輸出問題和使用者回答
         for log in log_data:
             f.write(f"{log}\n")
+        
+        # 輸出問題和回答的詳細過程
+        f.write("\n### 問題和回答紀錄:\n")
+        for qa in question_and_answers:
+            f.write(f"{qa}\n")
     
     return final, out
 
