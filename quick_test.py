@@ -164,6 +164,14 @@ def extract_last_agent_block(delta: str) -> str:
 def auto_answer(question_block: str) -> str:
     q = (question_block or "").replace(" ", "")
 
+    # ✅ 1) 先處理「確認題」（一定要放最前面）
+    if "這樣對嗎" in q and ("A." in q and "B." in q):
+        return "A"
+
+    # ✅ 2) 再處理營業時間輸入題
+    if "營業時間" in q:
+        return "每天 08:00-17:00"
+
     # 店名
     if "店名" in q:
         return "自動測試店"
@@ -175,14 +183,6 @@ def auto_answer(question_block: str) -> str:
     # 用餐時間 A/B/C
     if "用餐" in q and ("A." in q or "B." in q or "C." in q):
         return "B"
-
-    # 營業時間
-    if "營業時間" in q:
-        return "每天 08:00-17:00"
-
-    # 確認營業時間 A/B
-    if "這樣對嗎" in q and ("A." in q and "B." in q):
-        return "A"
 
     # 併桌
     if "併起來" in q and ("A." in q and "B." in q):
@@ -216,7 +216,7 @@ def auto_answer(question_block: str) -> str:
     if "直接採用" in q and "我想調整" in q:
         return "A"
 
-    # 最後保底：如果是選項題就 A
+    # 最後保底：選項題就 A
     if "A." in q and "B." in q:
         return "A"
 
