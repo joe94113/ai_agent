@@ -172,6 +172,13 @@ def auto_answer(question_block: str) -> str:
     if "營業時間" in q:
         return "每天 08:00-17:00"
 
+    if "線上訂位建議" in q and "直接採用" in q and "我想調整" in q:
+        return "A"  # 大部分 case：讓測試能收斂、跑完
+
+    # ✅ Step11：修改提示（要回「一句調整內容」，不能回 A/B）
+    if "你想怎麼調整" in q:
+        return "忙的時候每 30 分鐘最多 2 組線上訂位"
+
     # 店名
     if "店名" in q:
         return "自動測試店"
@@ -221,6 +228,42 @@ def auto_answer(question_block: str) -> str:
         return "A"
 
     return "A"
+
+def classify_step(q: str) -> str:
+    t = (q or "").replace(" ", "")
+
+    if "請問店名" in t or "店名是什麼" in t:
+        return "store_name"
+    if "桌型" in t or "人桌" in t:
+        return "resources"
+    if "用餐" in t and ("多久" in t or "大約" in t):
+        return "duration"
+    if "整理一下營業時間" in t and "這樣對嗎" in t:
+        return "hours_confirm"
+    if "營業時間" in t:
+        return "hours"
+    if "併起來" in t:
+        return "merge_tables"
+    if "最多" in t and ("幾個人" in t or "一起用餐" in t):
+        return "max_party_size"
+    if "扮演什麼角色" in t:
+        return "online_role"
+    if "最容易忙起來" in t:
+        return "peak_period"
+    if "佔多少位置" in t:
+        return "peak_ratio"
+    if "比較希望怎麼做" in t:
+        return "peak_strategy"
+    if "沒來" in t or "放鳥" in t:
+        return "no_show"
+
+    # ✅ Step11 兩種問題
+    if "線上訂位建議" in t and "直接採用" in t and "我想調整" in t:
+        return "step11_confirm"
+    if "你想怎麼調整" in t:
+        return "step11_modify"
+
+    return "unknown"
 
 # -----------------------------
 # 跑一個測試案例（腳本化 input）+ 產生 interleaved log
