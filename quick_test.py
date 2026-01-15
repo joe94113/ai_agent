@@ -6,6 +6,7 @@ import re
 from contextlib import redirect_stdout
 from unittest.mock import patch
 from typing import Any, Dict, List, Tuple, Optional
+from typing import Union
 
 import onboarding_fsm as agent  # ← 改成你的檔名（不要加 .py）
 
@@ -268,30 +269,67 @@ def classify_step(q: str) -> str:
 # -----------------------------
 # 跑一個測試案例（腳本化 input）+ 產生 interleaved log
 # -----------------------------
+InputPlan = Union[List[str], Dict[str, List[str]]]
+
 def run_case(
     name: str,
-    inputs: List[str],
+    inputs: InputPlan,
     use_real_llm: bool = False,
     log_dir: str = "test_logs",
-    max_turns: int = 80,          # 防止 LLM 一直重問
-    allow_autofill: bool = True,  # 真實情境建議 True
+    max_turns: int = 120,
+    allow_autofill: bool = True,
 ):
     os.makedirs(log_dir, exist_ok=True)
 
-    it = iter(inputs)
-    turns: List[Dict[str, str]] = []
-
+    turns: List[Dict[str, Any]] = []
     buf = io.StringIO()
     last_len = 0
     input_calls = 0
 
-    # ✅ 計數：是否真的打到 Ollama
+    # ✅ 每個 step 被問到第幾次（重問時會取下一個答案）
+    step_counts: Dict[str, int] = {}
+
+    # ✅ list 模式才需要 iterator
+    it = iter(inputs) if isinstance(inputs, list) else None
+
+    # ✅ 計數：是否真的打到 Ollama（requests.post 被呼叫幾次）
     llm_calls = {"n": 0}
     real_post = agent.requests.post
 
     def wrapped_post(url, *args, **kwargs):
         llm_calls["n"] += 1
         return real_post(url, *args, **kwargs)
+
+    def pick_from_plan(step: str) -> Tuple[str, bool]:
+        """
+        回傳 (answer, auto_used)
+        - dict 模式：依 step 取答案；同 step 重問會依序取下一個；用完就沿用最後一個
+        - list 模式：照順序取；用完才 auto
+        """
+        auto_used = False
+
+        # ✅ dict(step-plan) 模式：真實 LLM 強烈建議用這個
+        if isinstance(inputs, dict):
+            seq = inputs.get(step)
+            if seq is None:
+                seq = inputs.get("default", [])
+
+            if isinstance(seq, list) and len(seq) > 0:
+                k = step_counts.get(step, 0)
+                step_counts[step] = k + 1
+                ans = seq[k] if k < len(seq) else seq[-1]
+                return str(ans), False
+
+            # 沒提供就 auto
+            return "", True
+
+        # ✅ list 模式
+        assert it is not None
+        try:
+            ans = next(it)
+            return str(ans), False
+        except StopIteration:
+            return "", True
 
     def scripted_input(prompt: str = "") -> str:
         nonlocal last_len, input_calls
@@ -303,25 +341,27 @@ def run_case(
         delta = so_far[last_len:]
         last_len = len(so_far)
 
-        q = extract_last_agent_block(delta)
+        q = extract_last_agent_block(delta) or "🤖 Agent：<未捕捉到輸出>"
+        step = classify_step(q)
 
-        auto_used = False
-        try:
-            a = next(it)
-        except StopIteration:
+        a, auto_used = pick_from_plan(step)
+
+        # ✅ auto 時用你的 auto_answer 產答案（要能收斂 Step11）
+        if auto_used:
             if not allow_autofill:
-                raise RuntimeError(f"[{name}] 測試輸入不夠用，FSM 又多問了一題。請補 inputs。")
+                raise RuntimeError(f"[{name}] 測試輸入不夠用 / step-plan 未覆蓋：step={step}")
             a = auto_answer(q)
-            auto_used = True
 
         turns.append({
-            "q": q or "🤖 Agent：<未捕捉到輸出>",
+            "step": step,
+            "auto": auto_used,
+            "q": q,
             "a": a,
-            "auto": "1" if auto_used else "0",
         })
         return a
 
     err = None
+    out = ""
     try:
         with redirect_stdout(buf), patch("builtins.input", side_effect=scripted_input):
             if use_real_llm:
@@ -335,11 +375,10 @@ def run_case(
     finally:
         out = buf.getvalue()
 
-        # ✅ 就算失敗也先寫 log（用 FAIL_ 開頭）
+        auto_cnt = sum(1 for t in turns if t.get("auto"))
         log_name = f"{name}.txt" if err is None else f"FAIL_{name}.txt"
         log_path = os.path.join(log_dir, log_name)
 
-        auto_cnt = sum(1 for t in turns if t.get("auto") == "1")
         with open(log_path, "w", encoding="utf-8") as f:
             f.write(f"測試案例: {name}\n")
             f.write(f"use_real_llm: {use_real_llm}\n")
@@ -354,20 +393,19 @@ def run_case(
             f.write("\n====================\n### Interleaved Transcript\n====================\n")
             for i, t in enumerate(turns, 1):
                 f.write(f"\n--- Turn {i} ---\n")
-                if t.get("auto") == "1":
+                if t.get("auto"):
                     f.write("[AUTO-FILL]\n")
+                f.write(f"[step={t.get('step')}]\n")
                 f.write((t.get("q") or "").rstrip() + "\n")
                 f.write("\n輸入:\n")
-                f.write(t.get("a", "") + "\n")
+                f.write(str(t.get("a", "")) + "\n")
 
             f.write("\n====================\n### RAW STDOUT\n====================\n")
             f.write(out)
 
-    # ✅ 最後再把錯誤丟出去（讓測試 fail）
     if err is not None:
         raise err
 
-    # ✅ 真實情境要能證明真的有打到 Ollama
     if use_real_llm and llm_calls["n"] == 0:
         raise AssertionError(f"[{name}] use_real_llm=True 但 llm_http_calls=0，代表沒有打到 Ollama。")
 
@@ -386,35 +424,8 @@ def run_case(
     if not ok:
         raise AssertionError(f"[{name}] FINAL_JSON validator 失敗：{reason}\n\nRAW:\n{out}")
 
-    # 寫 log
     log_path = os.path.join(log_dir, f"{name}.txt")
-    auto_cnt = sum(1 for t in turns if t.get("auto") == "1")
-
-    with open(log_path, "w", encoding="utf-8") as f:
-        f.write(f"測試案例: {name}\n")
-        f.write(f"use_real_llm: {use_real_llm}\n")
-        f.write(f"llm_http_calls: {llm_calls['n']}\n")
-        f.write(f"turns: {len(turns)}\n")
-        f.write(f"auto_fills: {auto_cnt}\n")
-        f.write(f"store_name: {final.get('store_name')}\n")
-        f.write(f"capacity_hint: {final.get('capacity_hint')}\n")
-
-        f.write("\n====================\n")
-        f.write("### Interleaved Transcript\n")
-        f.write("====================\n")
-
-        for i, t in enumerate(turns, 1):
-            f.write(f"\n--- Turn {i} ---\n")
-            if t.get("auto") == "1":
-                f.write("[AUTO-FILL]\n")
-            f.write((t.get("q") or "").rstrip() + "\n")
-            f.write("\n輸入:\n")
-            f.write(t.get("a", "") + "\n")
-
-        f.write("\n====================\n")
-        f.write("### RAW STDOUT\n")
-        f.write("====================\n")
-        f.write(out)
+    auto_cnt = sum(1 for t in turns if t.get("auto"))
 
     print(
         f"✅ [{name}] PASS | turns={len(turns)} | auto={auto_cnt} | "
@@ -424,144 +435,126 @@ def run_case(
     return final, out, log_path
 
 def main():
-    TESTS: Dict[str, List[str]] = {
-        # 正常流程
-        "happy_daily_open": [
-            "123簡餐",
-            "四人桌五個 六人桌四個 八人桌一個",
-            "A",
-            "每天 08:00-17:00",
-            "A",
-            "A",
-            "12人",
-            "A",
-            "C",
-            "C",
-            "C",
-            "C",
-            "A",
-        ],
+    # ✅ 真實 LLM 建議用 step-plan（依問題回覆）
+    TESTS: Dict[str, Dict[str, List[str]]] = {
+        "happy_daily_open": {
+            "store_name": ["123簡餐"],
+            "resources": ["四人桌五個 六人桌四個 八人桌一個"],
+            "duration": ["A"],
+            "hours": ["每天 08:00-17:00"],
+            "hours_confirm": ["A"],
+            "merge_tables": ["A"],
+            "max_party_size": ["12人"],
+            "online_role": ["A"],
+            "peak_period": ["C"],
+            "peak_ratio": ["C"],
+            "peak_strategy": ["C"],
+            "no_show": ["C"],
+            "step11_confirm": ["A"],
+        },
 
-        # 週日公休 + 不可併桌（會跳過 max_party_size 詢問）
-        "closed_sunday_no_merge": [
-            "週末小館",
-            "4人桌3張 6人桌2張",
-            "B",
-            "週一到週六 08:00-17:00，週日公休",
-            "A",
-            "B",   # 不可併桌
-            "B",   # online_role
-            "D",   # peak
-            "B",   # ratio
-            "A",   # peak strategy
-            "B",   # no-show
-            "A",   # step11 accept
-        ],
+        "closed_sunday_no_merge": {
+            "store_name": ["週末小館"],
+            "resources": ["4人桌3張 6人桌2張"],
+            "duration": ["B"],
+            "hours": ["週一到週六 08:00-17:00，週日公休"],
+            "hours_confirm": ["A"],
+            "merge_tables": ["B"],  # 不可併桌（max_party_size 不會問）
+            "online_role": ["B"],
+            "peak_period": ["D"],
+            "peak_ratio": ["B"],
+            "peak_strategy": ["A"],
+            "no_show": ["B"],
+            "step11_confirm": ["A"],
+        },
 
-        # 桌型亂答一次再答對
-        "bad_resources_then_ok": [
-            "測試店",
-            "1+1",                 # resources 解析不到 -> 會重問
-            "4人桌2張 6人桌1張",    # ok
-            "A",
-            "每天 08:00-17:00",
-            "A",
-            "A",
-            "8人",
-            "B",
-            "A",
-            "B",
-            "B",
-            "B",
-            "A",
-        ],
+        "bad_resources_then_ok": {
+            "store_name": ["測試店"],
+            "resources": ["1+1", "4人桌2張 6人桌1張"],  # ✅ 同 step 重問會吃下一個
+            "duration": ["A"],
+            "hours": ["每天 08:00-17:00"],
+            "hours_confirm": ["A"],
+            "merge_tables": ["A"],
+            "max_party_size": ["8人"],
+            "online_role": ["B"],
+            "peak_period": ["A"],
+            "peak_ratio": ["B"],
+            "peak_strategy": ["B"],
+            "no_show": ["B"],
+            "step11_confirm": ["A"],
+        },
 
-        # 用餐時間亂答一次再答對
-        "bad_duration_then_ok": [
-            "亂答店",
-            "4人桌2張",
-            "我不知道",  # invalid -> 重問
-            "C",         # ok
-            "每天 08:00-17:00",
-            "A",
-            "A",
-            "10",
-            "C",
-            "E",
-            "B",
-            "A",
-            "C",
-            "A",
-        ],
+        "bad_duration_then_ok": {
+            "store_name": ["亂答店"],
+            "resources": ["4人桌2張"],
+            "duration": ["我不知道", "C"],  # ✅ 重問後改答對
+            "hours": ["每天 08:00-17:00"],
+            "hours_confirm": ["A"],
+            "merge_tables": ["A"],
+            "max_party_size": ["10"],
+            "online_role": ["C"],
+            "peak_period": ["E"],
+            "peak_ratio": ["B"],
+            "peak_strategy": ["A"],
+            "no_show": ["C"],
+            "step11_confirm": ["A"],
+        },
 
-        # 營業時間亂答一次再答對
-        "bad_hours_then_ok": [
-            "時間店",
-            "4人桌2張 6人桌1張",
-            "A",
-            "藍色好嗎？",        # hours 解析不到 -> 重問
-            "每天 08:00-17:00",  # ok
-            "每天 08:00-17:00",
-            "A",
-            "A",
-            "12人",
-            "A",
-            "C",
-            "C",
-            "B",
-            "B",
-            "A",
-        ],
+        "bad_hours_then_ok": {
+            "store_name": ["時間店"],
+            "resources": ["4人桌2張 6人桌1張"],
+            "duration": ["A"],
+            "hours": ["藍色好嗎？", "每天 08:00-17:00"],  # ✅ hours 抽不到會重問
+            "hours_confirm": ["A"],
+            "merge_tables": ["A"],
+            "max_party_size": ["12人"],
+            "online_role": ["A"],
+            "peak_period": ["C"],
+            "peak_ratio": ["C"],
+            "peak_strategy": ["B"],
+            "no_show": ["B"],
+            "step11_confirm": ["A"],
+        },
 
-        # 確認營業時間選 B（要求修改）再輸入新時間
-        "hours_confirm_B_then_fix": [
-            "改時間店",
-            "4人桌2張",
-            "B",
-            "每天 08:00-17:00",
-            "B",  # confirm 不對 -> 會要求再說一次營業時間
-            "週一到週六 09:00-18:00，週日公休",
-            "A",  # confirm ok
-            "A",
-            "8",
-            "B",
-            "D",
-            "A",
-            "A",
-            "B",
-            "A",
-        ],
+        "hours_confirm_B_then_fix": {
+            "store_name": ["改時間店"],
+            "resources": ["4人桌2張"],
+            "duration": ["B"],
+            "hours": ["每天 08:00-17:00", "週一到週六 09:00-18:00，週日公休"],
+            "hours_confirm": ["B", "A"],  # ✅ 先說不對，再確認正確
+            "merge_tables": ["A"],
+            "max_party_size": ["8"],
+            "online_role": ["B"],
+            "peak_period": ["D"],
+            "peak_ratio": ["A"],
+            "peak_strategy": ["A"],
+            "no_show": ["B"],
+            "step11_confirm": ["A"],
+        },
 
-        # Step11 走修改路徑：B -> 輸入修改文字 -> A 接受
-        "step11_modify_path": [
-            "修改店",
-            "4人桌3張 6人桌2張",
-            "A",
-            "每天 08:00-17:00",
-            "A",
-            "A",
-            "12",
-            "A",
-            "C",
-            "B",
-            "A",
-            "B",
-            "B",                  # Step11: 我想調整
-            "忙時 4 人桌 1 張、6 人桌 1 張",  # （fake_llm 不會改，但能測流程）
-            "A",                  # 接受
-        ],
+        "step11_modify_path": {
+            "store_name": ["修改店"],
+            "resources": ["4人桌3張 6人桌2張"],
+            "duration": ["A"],
+            "hours": ["每天 08:00-17:00"],
+            "hours_confirm": ["A"],
+            "merge_tables": ["A"],
+            "max_party_size": ["12"],
+            "online_role": ["A"],
+            "peak_period": ["C"],
+            "peak_ratio": ["B"],
+            "peak_strategy": ["A"],
+            "no_show": ["B"],
+            # ✅ Step11：第一次選 B 進修改，第二次選 A 接受
+            "step11_confirm": ["B", "A"],
+            "step11_modify": ["忙時 4 人桌 1 張、6 人桌 1 張"],
+        },
     }
 
-    # 預設：跑 mock（最快、最穩）
-    for name, inputs in TESTS.items():
-        # run_case(name, inputs, use_real_llm=False)
-
-        # ✅ 如果你想「確定有打到模型」，加一個 smoke test：
-        # （注意：這會真的打到 Ollama，結果可能不 deterministic、也可能比較慢）
-        run_case(name, inputs, use_real_llm=True)
+    for name, plan in TESTS.items():
+        run_case(name, plan, use_real_llm=True, allow_autofill=True, max_turns=120)
 
     print("\n🎉 All tests passed. Logs are under ./test_logs/")
-
 
 if __name__ == "__main__":
     main()
