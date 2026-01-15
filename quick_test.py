@@ -169,10 +169,10 @@ def auto_answer(question_block: str) -> str:
         return "自動測試店"
 
     # 桌型
-    if ("桌型" in q) or ("幾張" in q):
+    if ("桌型" in q) or ("幾張" in q) or ("人桌" in q):
         return "4人桌2張 6人桌1張"
 
-    # 用餐時間 (A/B/C)
+    # 用餐時間 A/B/C
     if "用餐" in q and ("A." in q or "B." in q or "C." in q):
         return "B"
 
@@ -189,7 +189,7 @@ def auto_answer(question_block: str) -> str:
         return "A"
 
     # 最大人數
-    if "最多" in q and "幾個人" in q:
+    if "最多" in q and ("幾個人" in q or "幾人" in q):
         return "8人"
 
     # 線上訂位角色
@@ -208,7 +208,7 @@ def auto_answer(question_block: str) -> str:
     if "比較希望怎麼做" in q and ("A." in q or "B." in q or "C." in q):
         return "A"
 
-    # no-show 容忍度
+    # no-show
     if "沒來" in q and ("A." in q or "B." in q or "C." in q):
         return "B"
 
@@ -216,7 +216,7 @@ def auto_answer(question_block: str) -> str:
     if "直接採用" in q and "我想調整" in q:
         return "A"
 
-    # 最後保底：如果是選項題就選 A
+    # 最後保底：如果是選項題就 A
     if "A." in q and "B." in q:
         return "A"
 
@@ -225,20 +225,37 @@ def auto_answer(question_block: str) -> str:
 # -----------------------------
 # 跑一個測試案例（腳本化 input）+ 產生 interleaved log
 # -----------------------------
-def run_case(name: str, inputs: List[str], use_real_llm: bool = False, log_dir: str = "test_logs"):
+def run_case(
+    name: str,
+    inputs: List[str],
+    use_real_llm: bool = False,
+    log_dir: str = "test_logs",
+    max_turns: int = 80,          # 防止 LLM 一直重問
+    allow_autofill: bool = True,  # 真實情境建議 True
+):
     os.makedirs(log_dir, exist_ok=True)
 
     it = iter(inputs)
-    consumed_inputs: List[str] = []
     turns: List[Dict[str, str]] = []
 
     buf = io.StringIO()
-    last_len = 0  # 上次 input 時 stdout 長度
+    last_len = 0
+    input_calls = 0
+
+    # ✅ 計數：是否真的打到 Ollama
+    llm_calls = {"n": 0}
+    real_post = agent.requests.post
+
+    def wrapped_post(url, *args, **kwargs):
+        llm_calls["n"] += 1
+        return real_post(url, *args, **kwargs)
 
     def scripted_input(prompt: str = "") -> str:
-        nonlocal last_len
+        nonlocal last_len, input_calls
+        input_calls += 1
+        if input_calls > max_turns:
+            raise RuntimeError(f"[{name}] 超過 max_turns={max_turns}，疑似 LLM 一直重問/卡住。")
 
-        # 取出「從上次 input 之後，到這次 input 之前」新印出的文字
         so_far = buf.getvalue()
         delta = so_far[last_len:]
         last_len = len(so_far)
@@ -249,29 +266,33 @@ def run_case(name: str, inputs: List[str], use_real_llm: bool = False, log_dir: 
         try:
             a = next(it)
         except StopIteration:
-            # ✅ 真實情境：LLM 可能多問，inputs 用完就自動補
+            if not allow_autofill:
+                raise RuntimeError(f"[{name}] 測試輸入不夠用，FSM 又多問了一題。請補 inputs。")
             a = auto_answer(q)
             auto_used = True
 
-        if auto_used:
-            consumed_inputs.append(f"[AUTO]{a}")
-        else:
-            consumed_inputs.append(a)
-
-        turns.append({"q": q, "a": a, "auto": "1" if auto_used else "0"})
+        turns.append({
+            "q": q or "🤖 Agent：<未捕捉到輸出>",
+            "a": a,
+            "auto": "1" if auto_used else "0",
+        })
         return a
 
-    # 執行 agent.main()，把 print 都導到 buf
     with redirect_stdout(buf), patch("builtins.input", side_effect=scripted_input):
         if use_real_llm:
-            # ✅ 這個模式會真的跑到 Ollama（agent.llm_extract 會打 requests）
-            agent.main()
+            # ✅ 真實情境：會打到 Ollama
+            with patch.object(agent.requests, "post", side_effect=wrapped_post):
+                agent.main()
         else:
-            # ✅ 這個模式不會打到模型，只測 FSM/validator/流程
+            # ✅ mock：不打模型
             with patch.object(agent, "llm_extract", side_effect=fake_llm_extract):
                 agent.main()
 
     out = buf.getvalue()
+
+    # ✅ 真實情境要能證明真的有打到 Ollama
+    if use_real_llm and llm_calls["n"] == 0:
+        raise AssertionError(f"[{name}] use_real_llm=True 但 llm_http_calls=0，代表沒有打到 Ollama。")
 
     # 抓 FINAL_JSON
     final = None
@@ -288,33 +309,28 @@ def run_case(name: str, inputs: List[str], use_real_llm: bool = False, log_dir: 
     if not ok:
         raise AssertionError(f"[{name}] FINAL_JSON validator 失敗：{reason}\n\nRAW:\n{out}")
 
-    used_n = len(consumed_inputs)
-    unused = inputs[used_n:] if used_n < len(inputs) else []
-
-    # 寫 log 檔
+    # 寫 log
     log_path = os.path.join(log_dir, f"{name}.txt")
+    auto_cnt = sum(1 for t in turns if t.get("auto") == "1")
+
     with open(log_path, "w", encoding="utf-8") as f:
         f.write(f"測試案例: {name}\n")
         f.write(f"use_real_llm: {use_real_llm}\n")
-        f.write(f"輸入被消耗數: {used_n}\n")
-        if unused:
-            f.write(f"⚠️ 未被使用的 inputs: {len(unused)}（代表你給太多輸入或流程提前結束）\n")
-
+        f.write(f"llm_http_calls: {llm_calls['n']}\n")
+        f.write(f"turns: {len(turns)}\n")
+        f.write(f"auto_fills: {auto_cnt}\n")
         f.write(f"store_name: {final.get('store_name')}\n")
         f.write(f"capacity_hint: {final.get('capacity_hint')}\n")
+
         f.write("\n====================\n")
         f.write("### Interleaved Transcript\n")
         f.write("====================\n")
 
         for i, t in enumerate(turns, 1):
             f.write(f"\n--- Turn {i} ---\n")
-            q = (t.get("q") or "").rstrip()
-            if not q:
-                q = "🤖 Agent：<未捕捉到輸出>"
-            auto_flag = t.get("auto", "0")
-            if auto_flag == "1":
+            if t.get("auto") == "1":
                 f.write("[AUTO-FILL]\n")
-            f.write(q + "\n")
+            f.write((t.get("q") or "").rstrip() + "\n")
             f.write("\n輸入:\n")
             f.write(t.get("a", "") + "\n")
 
@@ -323,10 +339,12 @@ def run_case(name: str, inputs: List[str], use_real_llm: bool = False, log_dir: 
         f.write("====================\n")
         f.write(out)
 
-    # 給 console 的簡短 PASS
-    print(f"✅ [{name}] PASS | turns={len(turns)} | store_name={final.get('store_name')} | capacity_hint={final.get('capacity_hint')} | log={log_path}")
+    print(
+        f"✅ [{name}] PASS | turns={len(turns)} | auto={auto_cnt} | "
+        f"llm_http_calls={llm_calls['n']} | store_name={final.get('store_name')} | "
+        f"capacity_hint={final.get('capacity_hint')} | log={log_path}"
+    )
     return final, out, log_path
-
 
 def main():
     TESTS: Dict[str, List[str]] = {
