@@ -388,11 +388,11 @@ def main():
 
     # 預設：跑 mock（最快、最穩）
     for name, inputs in TESTS.items():
-        run_case(name, inputs, use_real_llm=False)
+        # run_case(name, inputs, use_real_llm=False)
 
     # ✅ 如果你想「確定有打到模型」，加一個 smoke test：
     # （注意：這會真的打到 Ollama，結果可能不 deterministic、也可能比較慢）
-    # run_case("smoke_real_llm", TESTS["happy_daily_open"], use_real_llm=True)
+        run_case("smoke_real_llm", TESTS["happy_daily_open"], use_real_llm=True)
 
     print("\n🎉 All tests passed. Logs are under ./test_logs/")
 
