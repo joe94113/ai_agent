@@ -394,6 +394,9 @@ def parse_json_object(text: str) -> Optional[Dict[str, Any]]:
         return None
 
 def llm_extract(step_name: str, user_text: str, state: Dict[str, Any]) -> Dict[str, Any]:
+    if step_name == "store_name":
+        name = (user_text or "").strip()
+        return {"store_name": name} if name else {}
     schema_guide = {
         "store_name": r'輸出：{"store_name": "<非空字串>"}',
         "resources": r'輸出：{"resources":[{"party_size":4,"spots_total":5},{"party_size":6,"spots_total":2}]}  party_size/spots_total 都是整數',
