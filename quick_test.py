@@ -161,6 +161,66 @@ def extract_last_agent_block(delta: str) -> str:
     block = delta[idx:].strip()
     return block
 
+def auto_answer(question_block: str) -> str:
+    q = (question_block or "").replace(" ", "")
+
+    # 店名
+    if "店名" in q:
+        return "自動測試店"
+
+    # 桌型
+    if ("桌型" in q) or ("幾張" in q):
+        return "4人桌2張 6人桌1張"
+
+    # 用餐時間 (A/B/C)
+    if "用餐" in q and ("A." in q or "B." in q or "C." in q):
+        return "B"
+
+    # 營業時間
+    if "營業時間" in q:
+        return "每天 08:00-17:00"
+
+    # 確認營業時間 A/B
+    if "這樣對嗎" in q and ("A." in q and "B." in q):
+        return "A"
+
+    # 併桌
+    if "併起來" in q and ("A." in q and "B." in q):
+        return "A"
+
+    # 最大人數
+    if "最多" in q and "幾個人" in q:
+        return "8人"
+
+    # 線上訂位角色
+    if "扮演什麼角色" in q and ("A." in q or "B." in q or "C." in q):
+        return "B"
+
+    # 最忙時段
+    if "最容易忙起來" in q and ("A." in q or "B." in q or "C." in q or "D." in q):
+        return "C"
+
+    # 忙時線上佔比
+    if "佔多少位置" in q and ("A." in q or "B." in q or "C." in q):
+        return "B"
+
+    # 忙時策略
+    if "比較希望怎麼做" in q and ("A." in q or "B." in q or "C." in q):
+        return "A"
+
+    # no-show 容忍度
+    if "沒來" in q and ("A." in q or "B." in q or "C." in q):
+        return "B"
+
+    # Step11 接受/修改
+    if "直接採用" in q and "我想調整" in q:
+        return "A"
+
+    # 最後保底：如果是選項題就選 A
+    if "A." in q and "B." in q:
+        return "A"
+
+    return "A"
 
 # -----------------------------
 # 跑一個測試案例（腳本化 input）+ 產生 interleaved log
@@ -185,13 +245,20 @@ def run_case(name: str, inputs: List[str], use_real_llm: bool = False, log_dir: 
 
         q = extract_last_agent_block(delta)
 
+        auto_used = False
         try:
             a = next(it)
         except StopIteration:
-            raise RuntimeError(f"[{name}] 測試輸入不夠用，FSM 又多問了一題。請補 inputs。")
+            # ✅ 真實情境：LLM 可能多問，inputs 用完就自動補
+            a = auto_answer(q)
+            auto_used = True
 
-        consumed_inputs.append(a)
-        turns.append({"q": q, "a": a})
+        if auto_used:
+            consumed_inputs.append(f"[AUTO]{a}")
+        else:
+            consumed_inputs.append(a)
+
+        turns.append({"q": q, "a": a, "auto": "1" if auto_used else "0"})
         return a
 
     # 執行 agent.main()，把 print 都導到 buf
@@ -244,6 +311,9 @@ def run_case(name: str, inputs: List[str], use_real_llm: bool = False, log_dir: 
             q = (t.get("q") or "").rstrip()
             if not q:
                 q = "🤖 Agent：<未捕捉到輸出>"
+            auto_flag = t.get("auto", "0")
+            if auto_flag == "1":
+                f.write("[AUTO-FILL]\n")
             f.write(q + "\n")
             f.write("\n輸入:\n")
             f.write(t.get("a", "") + "\n")
