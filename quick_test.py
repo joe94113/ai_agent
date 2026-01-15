@@ -278,17 +278,51 @@ def run_case(
         })
         return a
 
-    with redirect_stdout(buf), patch("builtins.input", side_effect=scripted_input):
-        if use_real_llm:
-            # ✅ 真實情境：會打到 Ollama
-            with patch.object(agent.requests, "post", side_effect=wrapped_post):
-                agent.main()
-        else:
-            # ✅ mock：不打模型
-            with patch.object(agent, "llm_extract", side_effect=fake_llm_extract):
-                agent.main()
+    err = None
+    try:
+        with redirect_stdout(buf), patch("builtins.input", side_effect=scripted_input):
+            if use_real_llm:
+                with patch.object(agent.requests, "post", side_effect=wrapped_post):
+                    agent.main()
+            else:
+                with patch.object(agent, "llm_extract", side_effect=fake_llm_extract):
+                    agent.main()
+    except Exception as e:
+        err = e
+    finally:
+        out = buf.getvalue()
 
-    out = buf.getvalue()
+        # ✅ 就算失敗也先寫 log（用 FAIL_ 開頭）
+        log_name = f"{name}.txt" if err is None else f"FAIL_{name}.txt"
+        log_path = os.path.join(log_dir, log_name)
+
+        auto_cnt = sum(1 for t in turns if t.get("auto") == "1")
+        with open(log_path, "w", encoding="utf-8") as f:
+            f.write(f"測試案例: {name}\n")
+            f.write(f"use_real_llm: {use_real_llm}\n")
+            f.write(f"llm_http_calls: {llm_calls['n']}\n")
+            f.write(f"turns: {len(turns)}\n")
+            f.write(f"auto_fills: {auto_cnt}\n")
+            if err is not None:
+                f.write(f"STATUS: FAIL\nERROR: {repr(err)}\n")
+            else:
+                f.write("STATUS: PASS\n")
+
+            f.write("\n====================\n### Interleaved Transcript\n====================\n")
+            for i, t in enumerate(turns, 1):
+                f.write(f"\n--- Turn {i} ---\n")
+                if t.get("auto") == "1":
+                    f.write("[AUTO-FILL]\n")
+                f.write((t.get("q") or "").rstrip() + "\n")
+                f.write("\n輸入:\n")
+                f.write(t.get("a", "") + "\n")
+
+            f.write("\n====================\n### RAW STDOUT\n====================\n")
+            f.write(out)
+
+    # ✅ 最後再把錯誤丟出去（讓測試 fail）
+    if err is not None:
+        raise err
 
     # ✅ 真實情境要能證明真的有打到 Ollama
     if use_real_llm and llm_calls["n"] == 0:

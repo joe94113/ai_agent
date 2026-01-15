@@ -339,6 +339,7 @@ def call_ollama(messages: List[Dict[str, str]]) -> str:
         "model": MODEL_NAME,
         "messages": messages,
         "stream": False,
+        "format": "json",
         "options": {
             "temperature": 0.2,
             "top_p": 0.9
