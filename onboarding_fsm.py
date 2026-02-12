@@ -8,6 +8,113 @@ OLLAMA_URL = "http://localhost:11434/api/chat"
 MODEL_NAME = "llama3.1:8b-instruct-q4_K_M"
 
 # =========================
+# Simulation Engine (Thesis Core Contribution)
+# =========================
+
+class RestaurantSimulator:
+    def __init__(self, capacity, duration_min, online_ratio, no_show_prob):
+        self.capacity = capacity
+        self.duration_min = duration_min
+        self.online_quota = int(capacity * online_ratio)
+        self.walkin_quota = capacity - self.online_quota
+        self.no_show_prob = no_show_prob
+        
+    def run_one_evening(self):
+        """
+        模擬一個忙碌晚上的營運 (例如 4 小時)
+        假設：需求通常大於供給 (因為是 Peak Hour)
+        """
+        # 1. 產生需求 (Demand Generation)
+        # 假設該時段潛在客流量是座位數的 1.5 倍 ~ 2.5 倍 (Poisson 分佈概念簡化)
+        potential_online_demand = int(random.uniform(0.8, 1.5) * self.capacity)
+        potential_walkin_demand = int(random.uniform(0.5, 1.2) * self.capacity)
+
+        # 2. 處理線上訂位 (Online Booking Process)
+        # 訂位成功數 = min(需求, 配額)
+        booked_seats = min(potential_online_demand, self.online_quota)
+        
+        # 3. 處理 No-Show (Stochastic Event)
+        actual_arrivals_online = 0
+        for _ in range(booked_seats):
+            if random.random() > self.no_show_prob:
+                actual_arrivals_online += 1
+        
+        # 4. 處理現場客 (Walk-in Process)
+        # 現場客可以用：原本保留給現場的 + 線上 No-show 空出來的
+        available_for_walkin = self.capacity - actual_arrivals_online
+        walkin_seated = min(potential_walkin_demand, available_for_walkin)
+        
+        # 5. 計算結果 metrics
+        total_seated = actual_arrivals_online + walkin_seated
+        utilization = total_seated / self.capacity
+        
+        # 拒絕掉的客人 (Lost Opportunity)
+        rejected_online = max(0, potential_online_demand - self.online_quota)
+        rejected_walkin = max(0, potential_walkin_demand - available_for_walkin)
+        total_rejected = rejected_online + rejected_walkin
+        
+        return {
+            "utilization": utilization,
+            "lost_customers": total_rejected,
+            "empty_seats": self.capacity - total_seated
+        }
+
+def run_simulation_report(state: Dict[str, Any], runs=100) -> str:
+    """
+    執行 N 次模擬並產生分析報告
+    """
+    # 從 state 提取參數
+    cap = state.get("capacity_hint", 20)
+    dur = state.get("duration_sec", 5400) // 60
+    
+    # 解析策略參數
+    strat = state.get("strategy", {})
+    ratio = float(strat.get("peak_online_quota_ratio", 0.5))
+    peak_strat = strat.get("peak_strategy", "online_first")
+    
+    # 根據 peak_strategy 微調
+    if peak_strat == "no_online":
+        ratio = 0.0
+    elif peak_strat == "walkin_first" and ratio > 0.3:
+        ratio = 0.3 # 強制降低
+        
+    # 解析 No-show 機率
+    ns_tol = strat.get("no_show_tolerance", "medium")
+    ns_prob = {"low": 0.05, "medium": 0.15, "high": 0.30}.get(ns_tol, 0.15)
+
+    sim = RestaurantSimulator(cap, dur, ratio, ns_prob)
+    
+    # 執行蒙地卡羅模擬
+    results = [sim.run_one_evening() for _ in range(runs)]
+    
+    # 統計分析
+    avg_util = statistics.mean([r["utilization"] for r in results])
+    avg_lost = statistics.mean([r["lost_customers"] for r in results])
+    avg_empty = statistics.mean([r["empty_seats"] for r in results])
+    
+    # 產生建議文本 (Rule-based Advisory)
+    advice = ""
+    if avg_util < 0.7:
+        advice = "⚠️ 警告：座位利用率偏低，建議「增加線上訂位配額」以鎖定客源。"
+    elif avg_lost > cap * 0.5:
+        advice = "⚠️ 警告：拒絕客人數過多，代表需求外溢。建議啟用「候補名單」功能或嚴格限制用餐時間。"
+    elif ns_prob > 0.2 and ratio > 0.6:
+        advice = "⚠️ 風險：您的 No-show 容忍度高且線上佔比高，可能導致因 No-show 產生大量臨時空桌，建議降低線上比例。"
+    else:
+        advice = "✅ 分析：目前的配置在模擬中表現平衡，能有效兼顧翻桌率與客源。"
+
+    report = (
+        f"\n📊 【AI 營運模擬報告 (基於 {runs} 次蒙地卡羅模擬)】\n"
+        f"------------------------------------------------\n"
+        f"• 預估平均座位利用率：{avg_util:.1%}\n"
+        f"• 預估每晚流失客數　：約 {int(avg_lost)} 人 (因客滿或配額不足)\n"
+        f"• 預估每晚閒置空位　：約 {int(avg_empty)} 位 (因 No-show 或配額限制)\n"
+        f"------------------------------------------------\n"
+        f"💡 {advice}\n"
+    )
+    return report
+
+# =========================
 # Validators
 # =========================
 
@@ -895,26 +1002,33 @@ def main():
 
     # 商家確認/修改迴圈
     while True:
-        print("\n🤖 Agent：\n我整理了一個線上訂位建議，給你快速確認：")
+        # 1. 執行模擬 (這就是你的論文亮點：即時運算)
+        sim_report = run_simulation_report(state, runs=100)
+        
+        print("\n🤖 Agent：\n我整理了一個線上訂位建議，並幫您跑了 100 次營運模擬：")
+        
+        # 顯示模擬數據
+        print(sim_report)
+        
+        print(f"目前設定概要：")
         print(f"1) 線上訂位可訂入座時間：{summarize_business_hours(booking_hours)}")
-
+        
         if peak_strategy_local == "no_online":
-            print("2) 在你最忙的時段：建議不開放線上訂位（全部留給現場）。")
+            print("2) 忙時策略：不開放線上訂位 (No Online)")
         else:
-            print("2) 在你最忙的時段：")
-            print(f"   - 以每 {policy['peak_slot_minutes']} 分鐘為一個時段")
-            print(f"   - 建議線上座位預算：約 {policy['peak_online_seat_budget']} 位")
-            print(f"   - 建議每個時段最多新增線上訂位：約 {policy['peak_online_party_limit_per_slot']} 組")
-            print(f"   （推估典型訂位人數：{policy['typical_party_size']} 人；每組用餐約佔 {policy['duration_slots']} 個時段）")
+            print(f"2) 忙時策略：線上佔比約 {int(ratio*100)}% ({policy['peak_strategy']})")
+            print(f"   (預算: {policy['peak_online_seat_budget']} 位 / 每 {policy['peak_slot_minutes']} 分鐘限 {policy['peak_online_party_limit_per_slot']} 組)")
 
         print("\nA. 直接採用這個建議\nB. 我想調整")
         ans = input("\n你：").strip()
+        # ... (以下不用變，接原本的 input 處理邏輯)
         if ans.lower() in ("exit", "quit"):
             print("Bye")
             return
         c = normalize_choice(ans)
-
+        
         if c in ("a", "ok", "對", "接受", "好", "yes", "y"):
+            # ... (這裡接原本的確認邏輯)
             merge_patch(state, {
                 "booking_hours_json": booking_hours,
                 "strategy": {
