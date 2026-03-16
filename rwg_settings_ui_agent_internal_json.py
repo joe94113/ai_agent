@@ -103,8 +103,8 @@ def default_state(merchant_context: Dict[str, Any]) -> Dict[str, Any]:
         },
         "derived": {},
         "meta": {
-            "schema_version": "rwg-settings-ui-v1",
-            "agent_version": "settings-only-cli-v1",
+            "schema_version": "rwg-settings-ui-v2-internal-json",
+            "agent_version": "settings-only-cli-v2-internal-json",
             "generated_at": None,
             "excluded_partner_wide_features": [
                 "special_request_box",
@@ -676,6 +676,7 @@ def build_preview_availability(state: Dict[str, Any], preview_days: int = 2, max
 
 
 def build_google_feed_preview(state: Dict[str, Any]) -> Dict[str, Any]:
+    """Debug only. Laravel can assemble official Google feeds later."""
     mc = state["merchant_context"]
     s = state["reservation_settings"]
     merchant = {
@@ -771,6 +772,80 @@ def build_laravel_visual_payload(state: Dict[str, Any]) -> Dict[str, Any]:
         "simulation": state["derived"].get("simulation_report"),
         "excluded_partner_wide_features": state["meta"]["excluded_partner_wide_features"],
     }
+
+
+def build_internal_payload(state: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        "merchant_context": state["merchant_context"],
+        "reservation_settings": state["reservation_settings"],
+        "laravel_visual_payload": build_laravel_visual_payload(state),
+        "daily_feed_job_input": build_daily_feed_job_input(state),
+        "meta": state["meta"],
+    }
+
+
+def validate_internal_payload(payload: Dict[str, Any]) -> Tuple[bool, str]:
+    if not isinstance(payload, dict):
+        return False, "payload 必須是 object"
+    required_top = ["merchant_context", "reservation_settings", "laravel_visual_payload", "daily_feed_job_input", "meta"]
+    for key in required_top:
+        if key not in payload:
+            return False, f"缺少頂層欄位 {key}"
+
+    mc = payload["merchant_context"]
+    if not isinstance(mc, dict):
+        return False, "merchant_context 必須是 object"
+    for key in ["store_id", "merchant_id", "store_name", "timezone", "business_hours_json"]:
+        if key not in mc:
+            return False, f"merchant_context 缺少 {key}"
+    ok, msg = validate_business_hours_json(mc.get("business_hours_json"))
+    if not ok:
+        return False, f"merchant_context.business_hours_json 不合法：{msg}"
+
+    rs = payload["reservation_settings"]
+    if not isinstance(rs, dict):
+        return False, "reservation_settings 必須是 object"
+    ok, msg = validate_settings_ready({
+        "merchant_context": mc,
+        "reservation_settings": rs,
+        "derived": payload.get("daily_feed_job_input", {}).get("derived", {}),
+        "meta": payload.get("meta", {}),
+    })
+    if not ok:
+        return False, f"reservation_settings 不合法：{msg}"
+
+    dj = payload["daily_feed_job_input"]
+    if not isinstance(dj, dict):
+        return False, "daily_feed_job_input 必須是 object"
+    for key in ["merchant_id", "store_id", "service_id", "timezone", "business_hours_json", "online_booking_hours_json", "table_inventory", "service_duration_sec", "policy", "feed_generation"]:
+        if key not in dj:
+            return False, f"daily_feed_job_input 缺少 {key}"
+    ok, msg = validate_business_hours_json(dj.get("business_hours_json"))
+    if not ok:
+        return False, f"daily_feed_job_input.business_hours_json 不合法：{msg}"
+    ok, msg = validate_business_hours_json(dj.get("online_booking_hours_json"))
+    if not ok:
+        return False, f"daily_feed_job_input.online_booking_hours_json 不合法：{msg}"
+    ok, msg = validate_table_inventory(dj.get("table_inventory"))
+    if not ok:
+        return False, f"daily_feed_job_input.table_inventory 不合法：{msg}"
+
+    if not isinstance(payload["laravel_visual_payload"], dict):
+        return False, "laravel_visual_payload 必須是 object"
+
+    meta = payload["meta"]
+    if not isinstance(meta, dict):
+        return False, "meta 必須是 object"
+    for key in ["schema_version", "agent_version", "generated_at"]:
+        if key not in meta:
+            return False, f"meta 缺少 {key}"
+
+    return True, "ok"
+
+
+def ensure_json_roundtrip(payload: Dict[str, Any]) -> Dict[str, Any]:
+    raw = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    return json.loads(raw)
 
 
 # =========================================================
@@ -1130,22 +1205,20 @@ def main() -> None:
         print("\n❌ 設定尚未完整：", msg)
         return
 
-    result = {
-        "merchant_context": state["merchant_context"],
-        "reservation_settings": state["reservation_settings"],
-        "laravel_visual_payload": build_laravel_visual_payload(state),
-        "daily_feed_job_input": build_daily_feed_job_input(state),
-        "google_feed_preview": build_google_feed_preview(state),
-        "meta": state["meta"],
-    }
+    result = build_internal_payload(state)
+    ok, msg = validate_internal_payload(result)
+    if not ok:
+        print("\n❌ 內部 JSON 結構驗證失敗：", msg)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return
+
+    result = ensure_json_roundtrip(result)
 
     print("\n✅ [Laravel 可視化設定草稿]")
     print(json.dumps(result["laravel_visual_payload"], ensure_ascii=False, indent=2))
     print("\n✅ [每日 Feed Job 輸入]\n")
     print(json.dumps(result["daily_feed_job_input"], ensure_ascii=False, indent=2))
-    print("\n✅ [Google Feed Preview]\n")
-    print(json.dumps(result["google_feed_preview"], ensure_ascii=False, indent=2))
-    print("\n✅ [完整輸出]\n")
+    print("\n✅ [完整內部輸出 JSON]\n")
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 
