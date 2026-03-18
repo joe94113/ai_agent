@@ -10,7 +10,7 @@ from .constraints import feed_readiness, update_constraints
 from .evaluation import benchmark_as_json
 from .extractors import extract_slot_value, get_extractor_mode, set_extractor_mode
 from .policy_agent import DynamicPolicyAgent
-from .prompt_handlers import ask_text
+from .prompt_handlers import ask_text, retry_hint
 from .state_tracker import DEFAULT_MERCHANT_CONTEXT, add_history, create_state, increment_asked
 
 
@@ -27,6 +27,7 @@ def print_merchant_context(state: Dict[str, Any]) -> None:
     print()
 
 
+
 def run_interactive(agent_key: str) -> None:
     state = create_state(DEFAULT_MERCHANT_CONTEXT)
     agent = AGENTS[agent_key]()
@@ -41,26 +42,29 @@ def run_interactive(agent_key: str) -> None:
             break
 
         question = ask_text(slot, state)
-        increment_asked(state, slot)
-        print(f"\n🤖 [{slot}]\n{question}")
-        user_in = input("你：").strip()
-        if user_in.lower() in {"exit", "quit"}:
-            print("結束。")
-            return
 
-        parsed_value, confidence, message = extract_slot_value(slot, user_in, state)
-        if parsed_value is None:
-            print(f"⚠️ 解析失敗：{message}，請再試一次。")
-            continue
+        while True:
+            increment_asked(state, slot)
+            print(f"\n🤖 {question}")
+            user_in = input("你：").strip()
+            if user_in.lower() in {"exit", "quit"}:
+                print("結束。")
+                return
 
-        state["slots"][slot]["value"] = parsed_value
-        state["slots"][slot]["confidence"] = confidence
-        state["slots"][slot]["confirmed"] = True
-        add_history(state, slot, question, user_in, parsed_value)
+            parsed_value, confidence, message = extract_slot_value(slot, user_in, state)
+            if parsed_value is None:
+                print(f"⚠️ {message}。{retry_hint(slot)}")
+                continue
+
+            state["slots"][slot]["value"] = parsed_value
+            state["slots"][slot]["confidence"] = confidence
+            state["slots"][slot]["confirmed"] = True
+            add_history(state, slot, question, user_in, parsed_value)
+            break
 
         update_constraints(state)
         if state.get("conflicts"):
-            print("\n⚠️ 目前衝突：")
+            print("\n⚠️ 目前有些地方需要注意：")
             for c in state["conflicts"]:
                 print("-", c)
 
@@ -68,6 +72,7 @@ def run_interactive(agent_key: str) -> None:
     print("\n✅ Feed readiness:", feed_readiness(state))
     print("\n✅ 完整內部輸出 JSON\n")
     print(json.dumps(output, ensure_ascii=False, indent=2))
+
 
 
 def main() -> None:
