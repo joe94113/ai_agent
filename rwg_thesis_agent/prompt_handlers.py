@@ -7,6 +7,58 @@ from typing import Any, Dict, List, Tuple
 ALLOWED_PERIODS = {"weekday_lunch", "weekday_dinner", "weekend_brunch", "weekend_dinner"}
 
 
+FULLWIDTH_TRANS = str.maketrans({
+    "０": "0", "１": "1", "２": "2", "３": "3", "４": "4",
+    "５": "5", "６": "6", "７": "7", "８": "8", "９": "9",
+    "，": ",", "：": ":", "；": ";", "（": "(", "）": ")",
+})
+
+CH_DIGITS = {
+    "零": 0, "〇": 0, "一": 1, "二": 2, "兩": 2, "三": 3, "四": 4,
+    "五": 5, "六": 6, "七": 7, "八": 8, "九": 9,
+}
+
+
+def normalize_user_text(text: str) -> str:
+    return text.translate(FULLWIDTH_TRANS).replace("个", "個").strip()
+
+
+def chinese_number_to_int(token: str) -> int | None:
+    token = token.strip()
+    if not token:
+        return None
+    if token.isdigit():
+        return int(token)
+    token = token.replace("兩", "二")
+    if token in CH_DIGITS:
+        return CH_DIGITS[token]
+    if token == "十":
+        return 10
+    if "十" in token:
+        left, right = token.split("十", 1)
+        tens = 1 if left == "" else CH_DIGITS.get(left)
+        ones = 0 if right == "" else CH_DIGITS.get(right)
+        if tens is None or ones is None:
+            return None
+        return tens * 10 + ones
+    return None
+
+
+def parse_any_number(token: str) -> int | None:
+    token = normalize_user_text(token)
+    m = re.search(r"\d+", token)
+    if m:
+        return int(m.group(0))
+    m = re.search(r"[零〇一二兩三四五六七八九十]+", token)
+    if m:
+        return chinese_number_to_int(m.group(0))
+    return None
+
+
+def extract_first_number(text: str) -> int | None:
+    return parse_any_number(text)
+
+
 def ask_text(slot_name: str, state: Dict[str, Any]) -> str:
     business_hours = state["merchant_context"]["business_hours_json"]
     examples = {
@@ -123,29 +175,58 @@ def parse_slot(slot_name: str, text: str, state: Dict[str, Any]) -> Tuple[Any, f
 
 
 def parse_table_inventory(text: str) -> List[Dict[str, int]] | None:
-    text = text.strip()
+    text = normalize_user_text(text)
     if text.startswith("["):
         try:
             obj = json.loads(text)
             if isinstance(obj, list):
-                return [
-                    {"party_size": int(x["party_size"]), "spots_total": int(x["spots_total"])}
-                    for x in obj
-                ]
+                out = []
+                for x in obj:
+                    ps = parse_any_number(str(x.get("party_size", "")))
+                    cnt = parse_any_number(str(x.get("spots_total", "")))
+                    if ps is None or cnt is None:
+                        return None
+                    out.append({"party_size": ps, "spots_total": cnt})
+                return out or None
         except Exception:
             return None
-    matches = re.findall(r"(\d+)\s*人桌\s*(\d+)\s*張", text)
+
+    compact = re.sub(r"\s+", "", text)
+    pattern = re.compile(
+        r"([0-9零〇一二兩三四五六七八九十]+)\s*人(?:桌|位|座)?\s*([0-9零〇一二兩三四五六七八九十]+)\s*(?:張|個|桌|組)?"
+    )
+    matches = pattern.findall(compact)
     if not matches:
         return None
-    return [{"party_size": int(ps), "spots_total": int(cnt)} for ps, cnt in matches]
+
+    out: List[Dict[str, int]] = []
+    for ps_raw, cnt_raw in matches:
+        ps = parse_any_number(ps_raw)
+        cnt = parse_any_number(cnt_raw)
+        if ps is None or cnt is None or ps <= 0 or cnt < 0:
+            return None
+        out.append({"party_size": ps, "spots_total": cnt})
+
+    merged: Dict[int, int] = {}
+    for item in out:
+        merged[item["party_size"]] = merged.get(item["party_size"], 0) + item["spots_total"]
+    return [{"party_size": ps, "spots_total": merged[ps]} for ps in sorted(merged)]
 
 
 
 def parse_duration(text: str) -> int | None:
-    m = re.search(r"(\d+)", text)
-    if not m:
+    t = normalize_user_text(text)
+    if "一個半小時" in t or "1個半小時" in t or "1.5小時" in t or "九十分鐘" in t:
+        return 90 * 60
+    if "兩小時" in t or "二小時" in t or "120分鐘" in t or "二個小時" in t:
+        return 120 * 60
+    if "一小時" in t or "60分鐘" in t or "一個小時" in t:
+        return 60 * 60
+    minutes = extract_first_number(t)
+    if minutes is None:
         return None
-    minutes = int(m.group(1))
+    if "小時" in t and minutes in (1, 2):
+        minutes *= 60
     if minutes not in (60, 90, 120):
         return None
     return minutes * 60
@@ -195,18 +276,16 @@ def parse_yes_no(text: str) -> bool | None:
 
 
 def parse_positive_int(text: str) -> int | None:
-    m = re.search(r"(\d+)", text)
-    if not m:
-        return None
-    n = int(m.group(1))
-    return n if n > 0 else None
+    n = extract_first_number(text)
+    return n if n is not None and n > 0 else None
 
 
 TIME_CHOICE_TO_SEC = {"a": 0, "b": 1800, "c": 7200, "d": 86400}
 
 
+
 def parse_relative_time_to_seconds(text: str) -> int | None:
-    t = text.strip().lower()
+    t = normalize_user_text(text).lower()
     if not t:
         return None
     if t in TIME_CHOICE_TO_SEC:
@@ -228,15 +307,19 @@ def parse_relative_time_to_seconds(text: str) -> int | None:
     m = re.search(r"(\d+)\s*(秒|sec|secs|second|seconds)", t)
     if m:
         return int(m.group(1))
-    m = re.search(r"(\d+)\s*(分|分鐘|min|mins|minute|minutes)", t)
+
+    m = re.search(r"([0-9零〇一二兩三四五六七八九十]+)\s*(分|分鐘|min|mins|minute|minutes)", t)
     if m:
-        return int(m.group(1)) * 60
-    m = re.search(r"(\d+)\s*(小時|hr|hrs|hour|hours)", t)
+        n = parse_any_number(m.group(1))
+        return None if n is None else n * 60
+    m = re.search(r"([0-9零〇一二兩三四五六七八九十]+)\s*(小時|hr|hrs|hour|hours)", t)
     if m:
-        return int(m.group(1)) * 3600
-    m = re.search(r"(\d+)\s*(天|day|days)", t)
+        n = parse_any_number(m.group(1))
+        return None if n is None else n * 3600
+    m = re.search(r"([0-9零〇一二兩三四五六七八九十]+)\s*(天|day|days)", t)
     if m:
-        return int(m.group(1)) * 86400
+        n = parse_any_number(m.group(1))
+        return None if n is None else n * 86400
     return None
 
 
@@ -310,9 +393,9 @@ def parse_default_policy(text: str) -> Dict[str, Any] | None:
             return None
     if t in {"a", "大部分", "大部分給線上", "大部分都給線上", "線上優先", "online_first"}:
         return {"online_enabled": True, "online_quota_ratio": 0.8, "channel_priority": "online_first"}
-    if t in {"b", "一半", "一半左右", "平衡", "balanced"}:
+    if t in {"b", "一半", "一半左右", "差不多一半", "大概一半", "平衡", "balanced"}:
         return {"online_enabled": True, "online_quota_ratio": 0.5, "channel_priority": "balanced"}
-    if t in {"c", "少量", "少量就好", "現場為主", "留比較多給現場", "walkin_first"}:
+    if t in {"c", "少量", "少量就好", "少開一點線上", "現場為主", "留比較多給現場", "walkin_first"}:
         return {"online_enabled": True, "online_quota_ratio": 0.2, "channel_priority": "walkin_first"}
 
     m = re.match(r"(online_first|walkin_first|balanced)\s*(0(?:\.\d+)?|1(?:\.0+)?)?", t)
