@@ -887,8 +887,8 @@ def finalize_state(state: Dict[str, Any]) -> None:
 
 def print_merchant_context(state: Dict[str, Any]) -> None:
     mc = state["merchant_context"]
-    print("✅ 商家基本資料已預先載入，本 agent 只設定 Google 預訂相關規則。\n")
-    print("🏪 已載入商家：")
+    print("商家基本資料已預先載入，agent 只設定 Google 預訂相關規則。\n")
+    print("已載入商家：")
     print(f"- 店名：{mc['store_name']}")
     print(f"- Merchant ID：{mc['merchant_id']}")
     print(f"- 營業時間：{summarize_business_hours(mc['business_hours_json'])}")
