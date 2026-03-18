@@ -81,8 +81,8 @@ def main() -> None:
     parser.add_argument(
         "--extractor",
         choices=["rule", "ollama", "auto"],
-        default="rule",
-        help="slot extractor 模式：rule=規則、ollama=只用 OLLAMA、auto=先 OLLAMA 後退回規則",
+        default="auto",
+        help="slot extractor 模式：rule=規則、ollama=優先本地簡單解析後再用 OLLAMA、auto=先本地再 OLLAMA，最後退回規則",
     )
     args = parser.parse_args()
 

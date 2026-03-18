@@ -147,14 +147,20 @@ def llm_extract_slot(slot_name: str, user_text: str, state: Dict[str, Any]) -> T
 def extract_slot_value(slot_name: str, user_text: str, state: Dict[str, Any]) -> Tuple[Any, float, str]:
     """可切換 rule-based / OLLAMA 的 slot extractor。
 
-    modes:
-    - rule: 只用 rule-based parser，適合可重現實驗
-    - ollama: 優先用 OLLAMA，失敗則回傳失敗
-    - auto: 先用 OLLAMA，失敗時退回 rule-based parser
+    實務上，像「沒有」「A」「可以」「不行」這類答案不需要浪費一次模型呼叫，
+    所以即使在 ollama 模式，也會先嘗試本地規則解析；只有規則解析失敗，才交給 OLLAMA。
+    這樣可避免商家輸入很簡單的答案時，因模型輸出不穩而卡住。
     """
     mode = get_extractor_mode()
+
+    local_value, local_confidence, local_message = parse_slot(slot_name, user_text, state)
+    if local_value is not None:
+        if mode == "rule":
+            return local_value, local_confidence, local_message
+        return local_value, max(local_confidence, 0.95), "ok"
+
     if mode == "rule":
-        return parse_slot(slot_name, user_text, state)
+        return local_value, local_confidence, local_message
 
     if mode == "ollama":
         return llm_extract_slot(slot_name, user_text, state)
@@ -162,4 +168,4 @@ def extract_slot_value(slot_name: str, user_text: str, state: Dict[str, Any]) ->
     value, confidence, message = llm_extract_slot(slot_name, user_text, state)
     if value is not None:
         return value, confidence, message
-    return parse_slot(slot_name, user_text, state)
+    return local_value, local_confidence, local_message

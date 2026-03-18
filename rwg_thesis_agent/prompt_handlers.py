@@ -76,9 +76,11 @@ def ask_text(slot_name: str, state: Dict[str, Any]) -> str:
         "can_merge_tables": "如果客人比較多，可以幫他們併桌嗎？請輸入：可以 / 不行。",
         "max_party_size": "最多大概可以接待幾位客人一起用餐？請直接輸入數字，例如 8、10、12。",
         "service_scheduling_rules": (
-            "想確認一下規則：客人最晚要在多久前才能線上訂位？又最晚要在多久前可以線上取消？\n"
-            "您可以直接說：『訂位 2 小時前、取消前一天』\n"
-            "也可以用選項：A 不限制 / B 30 分鐘前 / C 2 小時前 / D 前一天。"
+            "想確認兩個時間規則：\n"
+            "1. 客人最晚要在多久前才能線上訂位？\n"
+            "2. 客人最晚要在多久前可以自己在線上取消？\n"
+            "如果兩個規則一樣，您可以直接回答一個選項：A 不限制 / B 30 分鐘前 / C 2 小時前 / D 前一天。\n"
+            "如果兩個規則不同，您可以直接說：『訂位 2 小時前、取消前一天』或『訂位 C、取消 D』。"
         ),
         "default_policy": (
             "一般時段，您希望線上訂位大概占多少位置？\n"
@@ -119,7 +121,7 @@ RETRY_HINTS = {
     "online_booking_hours_json": "這題目前需要貼 JSON；如果只是想忙時不開線上，可以回上一題選沿用，後面再設忙時規則。",
     "can_merge_tables": "請回答：可以 / 不行。",
     "max_party_size": "請直接輸入數字，例如 8、10、12。",
-    "service_scheduling_rules": "可以像這樣回答：『訂位 2 小時前、取消前一天』。",
+    "service_scheduling_rules": "如果兩個都一樣，可直接輸入 A / B / C / D；若不同，可回答『訂位 2 小時前、取消前一天』。",
     "default_policy": "請回答 A / B / C / D，或直接說『大部分給線上 / 一半左右 / 少量就好 / 不開線上』。",
     "time_block_overrides": "可以像這樣回答：『假日晚餐不開線上，只接現場』；沒有就輸入『沒有』。",
     "no_show_tolerance": "請回答 A / B / C，或直接說『不太能接受 / 還可以 / 可以接受』。",
@@ -304,6 +306,10 @@ def parse_relative_time_to_seconds(text: str) -> int | None:
     if any(x in t for x in ["1小時", "一小時"]):
         return 3600
 
+    m = re.search(r"(\d+)\s*h\b", t)
+    if m:
+        return int(m.group(1)) * 3600
+
     m = re.search(r"(\d+)\s*(秒|sec|secs|second|seconds)", t)
     if m:
         return int(m.group(1))
@@ -353,6 +359,15 @@ def parse_scheduling_rules(text: str) -> Dict[str, int] | None:
         return {
             "min_advance_booking_sec": booking_sec,
             "min_advance_online_canceling_sec": cancel_sec,
+        }
+
+    # 支援像「A」這種代表兩個規則都相同的單一選項
+    single_choice = re.fullmatch(r"\s*([A-Da-d])\s*", text)
+    if single_choice:
+        sec = TIME_CHOICE_TO_SEC[single_choice.group(1).lower()]
+        return {
+            "min_advance_booking_sec": sec,
+            "min_advance_online_canceling_sec": sec,
         }
 
     # 支援像「B D」這種簡單選項
