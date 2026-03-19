@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 from typing import Any, Dict
 
 from .baseline_fsm import BaselineFSMAgent
 from .builders import build_internal_output
-from .constraints import feed_readiness, update_constraints
+from .constraints import update_constraints
 from .evaluation import benchmark_as_json
 from .extractors import extract_slot_value, get_extractor_mode, set_extractor_mode
 from .policy_agent import DynamicPolicyAgent
@@ -28,7 +29,7 @@ def print_merchant_context(state: Dict[str, Any]) -> None:
 
 
 
-def run_interactive(agent_key: str) -> None:
+def run_interactive(agent_key: str, save_json_path: str | None = "rwg_internal_output.json") -> None:
     state = create_state(DEFAULT_MERCHANT_CONTEXT)
     agent = AGENTS[agent_key]()
 
@@ -69,7 +70,12 @@ def run_interactive(agent_key: str) -> None:
                 print("-", c)
 
     output = build_internal_output(state)
-    print("\n✅ Feed readiness:", feed_readiness(state))
+    solver_ready = output["daily_feed_job_input"]["readiness"]["ready_for_laravel_solver"]
+    print("\n✅ Laravel solver readiness:", solver_ready)
+    if save_json_path:
+        out_path = Path(save_json_path)
+        out_path.write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"💾 已儲存 JSON：{out_path.resolve()}")
     print("\n✅ 完整內部輸出 JSON\n")
     print(json.dumps(output, ensure_ascii=False, indent=2))
 
@@ -84,6 +90,11 @@ def main() -> None:
         default="auto",
         help="slot extractor 模式：rule=規則、ollama=優先本地簡單解析後再用 OLLAMA、auto=先本地再 OLLAMA，最後退回規則",
     )
+    parser.add_argument(
+        "--save-json",
+        default="rwg_internal_output.json",
+        help="輸出 JSON 存檔路徑；預設會存成 rwg_internal_output.json",
+    )
     args = parser.parse_args()
 
     set_extractor_mode(args.extractor)
@@ -93,7 +104,7 @@ def main() -> None:
             print("⚠️ eval 建議使用 --extractor rule，避免本機模型波動影響可重現性。")
         print(benchmark_as_json())
         return
-    run_interactive(args.mode)
+    run_interactive(args.mode, save_json_path=args.save_json)
 
 
 if __name__ == "__main__":

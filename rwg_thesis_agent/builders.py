@@ -127,23 +127,37 @@ def build_laravel_visual_payload(state: Dict[str, Any], simulation_report: Dict[
 def build_daily_feed_job_input(state: Dict[str, Any], simulation_report: Dict[str, Any]) -> Dict[str, Any]:
     merchant = state["merchant_context"]
     settings = build_reservation_settings(state)
+    peak_policy = compute_peak_policy(state)
+    ready_for_solver = feed_readiness(state)
     return {
         "merchant_id": merchant["merchant_id"],
         "store_id": merchant["store_id"],
         "service_id": "reservation",
         "timezone": merchant["timezone"],
         "business_hours_json": merchant["business_hours_json"],
-        "online_booking_hours_json": settings["online_booking_hours_json"],
-        "table_inventory": settings["table_inventory"],
-        "service_duration_sec": settings["service_duration_sec"],
-        "can_merge_tables": settings["can_merge_tables"],
-        "max_party_size": settings["max_party_size"],
-        "seating_sections": settings["seating_sections"],
-        "merchant_terms": settings["merchant_terms"],
         "service_scheduling_rules": settings["service_scheduling_rules"],
+        "merchant_terms": settings["merchant_terms"],
         "reservation_policy": settings["reservation_policy"],
-        "derived": {
-            "peak_policy": compute_peak_policy(state),
+        "inventory_solver_input": {
+            "solver_owner": "laravel",
+            "table_inventory": settings["table_inventory"],
+            "online_booking_hours_json": settings["online_booking_hours_json"],
+            "service_duration_sec": settings["service_duration_sec"],
+            "slot_minutes": peak_policy["slot_minutes"],
+            "can_merge_tables": settings["can_merge_tables"],
+            "max_party_size": settings["max_party_size"],
+            "party_size_range": {"min": 1, "max": settings["max_party_size"]},
+            "seating_sections": settings["seating_sections"],
+            "reservation_policy": settings["reservation_policy"],
+            "solver_contract": {
+                "generate_slot_level_availability_in": "laravel",
+                "emit_party_sizes_from_1_to_max_party_size": True,
+                "use_business_rules_not_raw_capacity_sum": True,
+                "recompute_after_booking_or_cancellation": True,
+            },
+        },
+        "advisory": {
+            "peak_policy": peak_policy,
             "warnings": list(state.get("warnings", [])),
             "simulation_report": simulation_report,
         },
@@ -151,8 +165,13 @@ def build_daily_feed_job_input(state: Dict[str, Any], simulation_report: Dict[st
             "availability_days": 30,
             "processing_instruction": "PROCESS_AS_COMPLETE",
             "full_inventory": True,
+            "availability_source": "laravel_inventory_solver",
         },
-        "ready_for_google_feed": feed_readiness(state),
+        "readiness": {
+            "ready_for_laravel_solver": ready_for_solver,
+            "ready_for_google_feed": False,
+            "reason": "Google Availability feed should be assembled after Laravel computes slot-level spots_open/spots_total.",
+        },
     }
 
 
@@ -166,7 +185,7 @@ def build_internal_output(state: Dict[str, Any]) -> Dict[str, Any]:
         "laravel_visual_payload": build_laravel_visual_payload(state, simulation_report),
         "daily_feed_job_input": build_daily_feed_job_input(state, simulation_report),
         "meta": {
-            "schema_version": "rwg-thesis-agent-v1",
+            "schema_version": "rwg-thesis-agent-v2-laravel-solver",
             "generated_at": datetime.now(TZ_UTC8).isoformat(),
             "agent_runtime": "python-package",
             "conflicts": list(state.get("conflicts", [])),
